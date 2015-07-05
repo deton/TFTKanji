@@ -8,16 +8,21 @@ class Fontx2 {
 	int open(SdFatBase* sd, const char* filepath);
 	bool close();
 	int draw(Adafruit_GFX *tft, uint16_t sjis, int16_t x, int16_t y, uint16_t color);
-	int getXSize() {
+	/** 文字幅 */
+	int width() {
 	  return XSize;
 	}
-	int getYSize() {
+	/** 文字高さ */
+	int height() {
 	  return YSize;
 	}
 
   private:
+	int getAsciiAddr(uint16_t ascii);
 	//int getKanjiBlock(uint16_t sjis);
 	int getKanjiAddr(uint16_t sjis);
+	/** 1文字ぶんのビットマップデータのバイト数 */
+	int bitmapLen();
 
 	// TODO: allocate table for kanji font only
 	unsigned short  start[92], end[92]; // table
