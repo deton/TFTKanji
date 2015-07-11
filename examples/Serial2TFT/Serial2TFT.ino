@@ -46,6 +46,9 @@ int initdone = 0;
 
 void setup() {
   Serial.begin(115200);
+  while (!Serial) { // これがないとIDEからの書き込みがエラーになる
+    // wait for Leonardo
+  }
   pinMode(SD_SS_PIN, OUTPUT);
 
   tft.reset();
