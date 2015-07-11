@@ -3,7 +3,7 @@
 
 #include <Adafruit_GFX.h>    // Core graphics library
 #include "SWTFT.h" // Hardware-specific library
-#include "Fontx2.h"
+#include "TFTKanji.h"
 
 #define SD_SS_PIN 10
 #define kanji_file "GONZN16X.TLF"
@@ -19,8 +19,6 @@ const uint8_t SD_CHIP_SELECT_PIN = 10;
 
 // SdFat software SPI template
 SdFatSoftSpi<SOFT_MISO_PIN, SOFT_MOSI_PIN, SOFT_SCK_PIN> sd;
-Fontx2 kanjiFont;
-Fontx2 asciiFont;
 
 // Assign human-readable names to some common 16-bit color values:
 #define BLACK   0x0000
@@ -33,6 +31,7 @@ Fontx2 asciiFont;
 #define WHITE   0xFFFF
 
 SWTFT tft;
+TFTKanji tftkanji;
 
 int init_sd() {
   if (!sd.begin(SD_SS_PIN)) {
@@ -58,20 +57,10 @@ void setup() {
 }
 
 int init_font() {
-  int ret = kanjiFont.open(&sd, kanji_file);
-  Serial.print("kanjiFont.open()=");
+  int ret = tftkanji.open(&sd, kanji_file, ascii_file);
+  Serial.print("tftkanji.open()=");
   Serial.println(ret);
-  if (ret != 0) {
-    return ret;
-  }
-
-  ret = asciiFont.open(&sd, ascii_file);
-  Serial.print("asciiFont.open()=");
-  Serial.println(ret);
-  if (ret != 0) {
-    return ret;
-  }
-  return 0;
+  return ret;
 }
 
 int init_sd_font() {
@@ -84,58 +73,33 @@ int init_sd_font() {
     return ret;
   }
 
-  ret = init_font();
-  if (ret != 0) {
-    return ret;
-  }
-  return 0;
-}
-
-bool iskanji1(int c) {
-  return (c >= 0x81 && c <= 0x9f || c >= 0xe0 && c <= 0xff);
+  return init_font();
 }
 
 void loop() {
-  static int x = 0;
   static int y = 0;
-  static uint16_t kanji1 = 0;
-  Fontx2 *font;
-  uint16_t code;
-  int ret;
+  char buf[80];
+  memset(buf, 0, sizeof buf);
   if (Serial.available()) {
-    int ch = Serial.read();
-    //Serial.print(ch, HEX);
-    if (kanji1) {
-      code = (kanji1 << 8) | ch;
-      kanji1 = 0;
-      font = &kanjiFont;
-    } else if (iskanji1(ch)) {
-      kanji1 = ch;
+    int n = Serial.readBytesUntil('\n', buf, sizeof buf);
+    Serial.println(buf);
+    if (n <= 0) {
       return;
-    } else {
-      code = ch;
-      font = &asciiFont;
     }
 
     if (!initdone) {
-      ret = init_sd_font();
-      if (ret == 0) {
+      if (init_sd_font() == 0) {
         initdone = 1;
       }
     }
     if (initdone) {
-      tft.fillRect(x, y, font->width(), font->height(), BLACK);
-      ret = font->draw(&tft, code, x, y, WHITE);
-      x += font->width();
-      if (x >= tft.width()) {
-        x = 0;
-        y += font->height();
-        if (y >= tft.height()) {
-          y = 0;
-        }
+      int ret = tftkanji.draw(&tft, buf, 0, y, WHITE, BLACK);
+      y += tftkanji.height();
+      if (y >= tft.height()) {
+	y = 0;
       }
 
-      if (ret < -1) { // ignore seek error
+      if (ret < -1) { // ignore no kanji data error(-1)
         ret = init_font(); // re-init
         if (ret != 0) {
           initdone = 0;
