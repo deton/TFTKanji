@@ -9,7 +9,7 @@ TFTKanji::~TFTKanji() {
   close();
 }
 
-int TFTKanji::open(SdFatBase* sd, const char* kanjifile, const char* asciifile) {
+int TFTKanji::open(SdFatBase* sd, const char* kanjifile, const char* ankfile) {
   int ret = kanjiFont.open(sd, kanjifile);
 #if DBGLOG
   Serial.print("kanjiFont.open()=");
@@ -19,9 +19,9 @@ int TFTKanji::open(SdFatBase* sd, const char* kanjifile, const char* asciifile) 
     return ret;
   }
 
-  ret = asciiFont.open(sd, asciifile);
+  ret = ankFont.open(sd, ankfile);
 #if DBGLOG
-  Serial.print("asciiFont.open()=");
+  Serial.print("ankFont.open()=");
   Serial.println(ret);
 #endif
   if (ret != 0) {
@@ -31,7 +31,7 @@ int TFTKanji::open(SdFatBase* sd, const char* kanjifile, const char* asciifile) 
 }
 
 bool TFTKanji::close() {
-  asciiFont.close();
+  ankFont.close();
   kanjiFont.close();
 }
 
@@ -51,7 +51,7 @@ int TFTKanji::draw(Adafruit_GFX *tft, const char* str, int16_t startx, int16_t y
   for (; *p != '\0'; p++) {
     Fontx2 *font;
     uint8_t ch = (uint8_t)*p;
-#if 1 //DBGLOG
+#if DBGLOG
     Serial.print(ch, HEX);
 #endif
     if (kanji1) {
@@ -63,7 +63,7 @@ int TFTKanji::draw(Adafruit_GFX *tft, const char* str, int16_t startx, int16_t y
       continue;
     } else {
       code = ch;
-      font = &asciiFont;
+      font = &ankFont;
     }
     // TODO: '\n'があったら次の行
 

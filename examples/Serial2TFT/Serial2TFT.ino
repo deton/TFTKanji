@@ -7,7 +7,7 @@
 
 #define SD_SS_PIN 10
 #define kanji_file "GONZN16X.TLF"
-#define ascii_file "GONHN16X.TLF"
+#define ank_file   "GONHN16X.TLF"
 
 // Pin numbers in templates must be constants.
 const uint8_t SOFT_MISO_PIN = 12;
@@ -57,7 +57,7 @@ void setup() {
 }
 
 int init_font() {
-  int ret = tftkanji.open(&sd, kanji_file, ascii_file);
+  int ret = tftkanji.open(&sd, kanji_file, ank_file);
   Serial.print("tftkanji.open()=");
   Serial.println(ret);
   return ret;
@@ -96,7 +96,7 @@ void loop() {
       int ret = tftkanji.draw(&tft, buf, 0, y, WHITE, BLACK);
       y += tftkanji.height();
       if (y >= tft.height()) {
-	y = 0;
+        y = 0;
       }
 
       if (ret < -1) { // ignore no kanji data error(-1)

@@ -2,7 +2,7 @@
 
 #define DBGLOG 0
 
-const int ASCII_DATA_START = 17;
+const int ANK_DATA_START = 17;
 
 Fontx2::Fontx2() :start(NULL), end(NULL) {
 }
@@ -55,7 +55,7 @@ int Fontx2::open(SdFatBase* sd, const char* filepath) {
   Serial.print("YSize: "); Serial.println(YSize);
   Serial.print("CodeType: "); Serial.println(CodeType);
 #endif
-  if (CodeType == 0) { // ASCII font
+  if (CodeType == 0) { // ANK font
     return 0;
   }
   if ((Tnum = sdfile.read()) <= 0) {
@@ -120,33 +120,11 @@ int Fontx2::bitmapLen() {
   return byteWidth * height();
 }
 
-uint32_t Fontx2::getAsciiAddr(uint16_t ascii) {
-  if (ascii > 0x7f) {
-    return 0;
-  }
-  return ASCII_DATA_START + ascii * bitmapLen();
+uint32_t Fontx2::getAnkAddr(uint16_t ank) {
+  return ANK_DATA_START + ank * bitmapLen();
 }
-
-#if 0
-int Fontx2::getKanjiBlock(uint16_t sjis) {
-  for (int i = 0; i < Tnum; i++) {
-    if (start[i] >= sjis && end[i] <= sjis) {
-      return i;
-    }
-  }
-  return -1;
-}
-#endif
 
 uint32_t Fontx2::getKanjiAddr(uint16_t sjis) {
-  /*
-  int block = getKanjiBlock(sjis);
-  if (block == -1) {
-    sjis = 0x81a0; // 文字がない場合の置き換え文字"□"
-    block = getKanjiBlock(sjis);
-  }
-  int offset = sjis - start[block];
-  */
   int c = 0;
   uint32_t adrs = 0;
   while(sjis > start[c]){
@@ -163,7 +141,7 @@ uint32_t Fontx2::getKanjiAddr(uint16_t sjis) {
   Serial.print(",table num="); Serial.print(c);
   Serial.print(",adrs="); Serial.println(adrs, HEX);
 #endif
-  uint32_t kanjiDataStart = ASCII_DATA_START + 1 + Tnum * sizeof(short) * 2;
+  uint32_t kanjiDataStart = ANK_DATA_START + 1 + Tnum * sizeof(short) * 2;
   return kanjiDataStart + bitmapLen() * adrs;
 }
 
@@ -198,13 +176,13 @@ int Fontx2::draw(Adafruit_GFX *tft, uint16_t sjis, int16_t x, int16_t y, uint16_
 
   uint32_t adrs;
   if (CodeType == 0) {
-    adrs = getAsciiAddr(sjis);
+    adrs = getAnkAddr(sjis);
   } else {
     adrs = getKanjiAddr(sjis);
   }
 
   // check file size before seek
-  if (adrs < ASCII_DATA_START || adrs > sdfile.fileSize()) {
+  if (adrs < ANK_DATA_START || adrs > sdfile.fileSize()) {
     return -1; // 指定された文字コードに対する文字データ無し
   }
   if (!sdfile.seekSet(adrs)) {

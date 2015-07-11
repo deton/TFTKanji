@@ -4,7 +4,7 @@ class TFTKanji {
   public:
     TFTKanji();
     virtual ~TFTKanji();
-    int open(SdFatBase* sd, const char* kanjifile, const char* asciifile);
+    int open(SdFatBase* sd, const char* kanjifile, const char* ankfile);
     bool close();
     /**
      * 文字列を描画する
@@ -15,7 +15,7 @@ class TFTKanji {
 
     /** 文字の高さ */
     int height() const {
-      return max(kanjiFont.height(), asciiFont.height());
+      return max(kanjiFont.height(), ankFont.height());
     }
 
     static bool iskanji1(int c) {
@@ -26,5 +26,5 @@ class TFTKanji {
     int draw(Adafruit_GFX *tft, const char* str, int16_t x, int16_t y, uint16_t color, uint16_t bgcolor, bool drawbg);
 
     Fontx2 kanjiFont;
-    Fontx2 asciiFont;
+    Fontx2 ankFont;
 };

@@ -18,7 +18,7 @@ class Fontx2 {
     }
 
   private:
-    uint32_t getAsciiAddr(uint16_t ascii);
+    uint32_t getAnkAddr(uint16_t ank);
     //int getKanjiBlock(uint16_t sjis);
     uint32_t getKanjiAddr(uint16_t sjis);
     /** 1文字ぶんのビットマップデータのバイト数 */
@@ -28,7 +28,7 @@ class Fontx2 {
     char            FontName[8+1];      // 06-13 Font name    
     unsigned char   XSize;              // 14            
     unsigned char   YSize;              // 15
-    unsigned char   CodeType;           // 16 0:ASCII, 1:KANJI   
+    unsigned char   CodeType;           // 16 0:ANK, 1:KANJI   
     unsigned char   Tnum;               // 17 Table entry number
 
     // table
