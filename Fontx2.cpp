@@ -1,6 +1,6 @@
 #include "Fontx2.h"
 
-#define DBGLOG 1
+#define DBGLOG 0
 
 const int ASCII_DATA_START = 17;
 
@@ -111,9 +111,9 @@ int Fontx2::bitmapLen() {
   return byteWidth * height();
 }
 
-int Fontx2::getAsciiAddr(uint16_t ascii) {
+uint32_t Fontx2::getAsciiAddr(uint16_t ascii) {
   if (ascii > 0x7f) {
-    ascii = '_'; // unknown char
+    return 0;
   }
   return ASCII_DATA_START + ascii * bitmapLen();
 }
@@ -129,7 +129,7 @@ int Fontx2::getKanjiBlock(uint16_t sjis) {
 }
 #endif
 
-int Fontx2::getKanjiAddr(uint16_t sjis) {
+uint32_t Fontx2::getKanjiAddr(uint16_t sjis) {
   /*
   int block = getKanjiBlock(sjis);
   if (block == -1) {
@@ -139,7 +139,7 @@ int Fontx2::getKanjiAddr(uint16_t sjis) {
   int offset = sjis - start[block];
   */
   int c = 0;
-  int adrs = 0;
+  uint32_t adrs = 0;
   while(sjis > start[c]){
     if (sjis > end[c]){
       adrs += end[c] - start[c] + 1;
@@ -154,7 +154,7 @@ int Fontx2::getKanjiAddr(uint16_t sjis) {
   Serial.print(",table num="); Serial.print(c);
   Serial.print(",adrs="); Serial.println(adrs, HEX);
 #endif
-  int kanjiDataStart = ASCII_DATA_START + 1 + Tnum * sizeof(short) * 2;
+  uint32_t kanjiDataStart = ASCII_DATA_START + 1 + Tnum * sizeof(short) * 2;
   return kanjiDataStart + bitmapLen() * adrs;
 }
 
@@ -166,16 +166,17 @@ int Fontx2::draw(Adafruit_GFX *tft, uint16_t sjis, int16_t x, int16_t y, uint16_
   // 24x24 font requires 72 bytes.
   unsigned char bitmap[72]; // font bitmap read buffer 
 
-  int adrs;
+  uint32_t adrs;
   if (CodeType == 0) {
     adrs = getAsciiAddr(sjis);
   } else {
     adrs = getKanjiAddr(sjis);
   }
 
-  // TODO: check file size before seek
-  // TODO: use GETA or TOFU if no data
-  // Kanji image Read
+  // check file size before seek
+  if (adrs < ASCII_DATA_START || adrs > sdfile.fileSize()) {
+    return -1; // 指定された文字コードに対する文字データ無し
+  }
   if (!sdfile.seekSet(adrs)) {
 #if DBGLOG
     Serial.println("seek failed");
