@@ -104,7 +104,7 @@ void loop() {
   int ret;
   if (Serial.available()) {
     int ch = Serial.read();
-    Serial.print(ch, HEX);
+    //Serial.print(ch, HEX);
     if (kanji1) {
       code = (kanji1 << 8) | ch;
       kanji1 = 0;

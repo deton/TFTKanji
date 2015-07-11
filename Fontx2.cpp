@@ -4,7 +4,7 @@
 
 const int ASCII_DATA_START = 17;
 
-Fontx2::Fontx2() {
+Fontx2::Fontx2() :start(NULL), end(NULL) {
 }
 
 Fontx2::~Fontx2() {
@@ -19,12 +19,15 @@ int Fontx2::open(SdFatBase* sd, const char* filepath) {
   }
 
   // read header
+  // TODO: structにして、一度に読み込む形にする
   // cf. http://kanpapa.com/today/2011/11/mbed-16dotfont-vfd.html
   char identifier[6+1];    // 00-05 "FONTX2"   
-  if (sdfile.read(identifier, 6) < 6) {    // "FONTX2"
+  memset(identifier, 0, sizeof identifier);
+  if (sdfile.read(identifier, 6) < 6 || strncmp(identifier, "FONTX2", 6) != 0) {
     sdfile.close();
     return -2;
   }
+  memset(FontName, 0, sizeof FontName);
   if (sdfile.read(FontName, 8) < 8) {
     sdfile.close();
     return -3;
@@ -62,12 +65,10 @@ int Fontx2::open(SdFatBase* sd, const char* filepath) {
 #if DBGLOG
   Serial.print("Tnum: "); Serial.println(Tnum);
 #endif
-  if (Tnum >= 92) { // 固定サイズでstart[92]等を持っているので
-    sdfile.close();
-    return -8;
-  }
 
   // Table read
+  start = new uint16_t[Tnum];
+  end   = new uint16_t[Tnum];
   for (int a = 0; a < Tnum; a++) {
     if (sdfile.read(&start[a], 2) < 2) {
       sdfile.close();
@@ -87,6 +88,14 @@ int Fontx2::open(SdFatBase* sd, const char* filepath) {
 }
 
 bool Fontx2::close() {
+  if (end != NULL) {
+    delete[] end;
+    end = NULL;
+  }
+  if (start != NULL) {
+    delete[] start;
+    start = NULL;
+  }
   return sdfile.close();
 }
 
@@ -158,36 +167,9 @@ uint32_t Fontx2::getKanjiAddr(uint16_t sjis) {
   return kanjiDataStart + bitmapLen() * adrs;
 }
 
-int Fontx2::draw(Adafruit_GFX *tft, uint16_t sjis, int16_t x, int16_t y, uint16_t color) {
-  if (!sdfile.isOpen()) {
-    return -2;
-  }
-
-  // 24x24 font requires 72 bytes.
-  unsigned char bitmap[72]; // font bitmap read buffer 
-
-  uint32_t adrs;
-  if (CodeType == 0) {
-    adrs = getAsciiAddr(sjis);
-  } else {
-    adrs = getKanjiAddr(sjis);
-  }
-
-  // check file size before seek
-  if (adrs < ASCII_DATA_START || adrs > sdfile.fileSize()) {
-    return -1; // 指定された文字コードに対する文字データ無し
-  }
-  if (!sdfile.seekSet(adrs)) {
-#if DBGLOG
-    Serial.println("seek failed");
-#endif
-    return -1;
-  }
+int Fontx2::readAndDrawBitmap(Adafruit_GFX *tft, int len, int16_t x, int16_t y, uint16_t color) {
+  unsigned char bitmap[len]; // font bitmap read buffer 
   int ret;
-  int len = bitmapLen();
-  if (len > sizeof(bitmap)) {
-    return -3;
-  }
   if ((ret = sdfile.read(&bitmap, len)) < len) {
 #if DBGLOG
     Serial.print("read error:");
@@ -207,4 +189,31 @@ int Fontx2::draw(Adafruit_GFX *tft, uint16_t sjis, int16_t x, int16_t y, uint16_
 
   drawBitmap(tft, x, y, bitmap, XSize, YSize, color);
   return 0;
+}
+
+int Fontx2::draw(Adafruit_GFX *tft, uint16_t sjis, int16_t x, int16_t y, uint16_t color) {
+  if (!sdfile.isOpen()) {
+    return -2;
+  }
+
+  uint32_t adrs;
+  if (CodeType == 0) {
+    adrs = getAsciiAddr(sjis);
+  } else {
+    adrs = getKanjiAddr(sjis);
+  }
+
+  // check file size before seek
+  if (adrs < ASCII_DATA_START || adrs > sdfile.fileSize()) {
+    return -1; // 指定された文字コードに対する文字データ無し
+  }
+  if (!sdfile.seekSet(adrs)) {
+#if DBGLOG
+    Serial.println("seek failed");
+#endif
+    return -1;
+  }
+
+  int len = bitmapLen();
+  return readAndDrawBitmap(tft, len, x, y, color);
 }

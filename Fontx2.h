@@ -23,15 +23,17 @@ class Fontx2 {
     uint32_t getKanjiAddr(uint16_t sjis);
     /** 1文字ぶんのビットマップデータのバイト数 */
     int bitmapLen();
-
-    // TODO: allocate table for kanji font only
-    unsigned short  start[92], end[92]; // table
+    int readAndDrawBitmap(Adafruit_GFX *tft, int len, int16_t x, int16_t y, uint16_t color);
 
     char            FontName[8+1];      // 06-13 Font name    
     unsigned char   XSize;              // 14            
     unsigned char   YSize;              // 15
     unsigned char   CodeType;           // 16 0:ASCII, 1:KANJI   
     unsigned char   Tnum;               // 17 Table entry number
+
+    // table
+    uint16_t* start;
+    uint16_t* end;
 
     SdFile sdfile;
 };
