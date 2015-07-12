@@ -42,7 +42,7 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color) 
 }
 
 int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor) {
-  uint16_t kanji1 = 0;
+  uint16_t sjis1 = 0;
   uint16_t code;
   const char* p = str;
   for (; *p != '\0'; p++) {
@@ -51,25 +51,36 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, 
 #if DBGLOG
     Serial.print(ch, HEX);
 #endif
-    if (kanji1) {
-      code = (kanji1 << 8) | ch;
-      kanji1 = 0;
+    if (sjis1) { // SJIS 2nd byte
+      code = (sjis1 << 8) | ch;
+      sjis1 = 0;
       font = &kanjiFont;
-    } else if (iskanji1(ch)) {
-      kanji1 = ch;
+    } else if (issjis1(ch)) { // SJIS 1st byte
+      sjis1 = ch;
       continue;
     } else {
       code = ch;
       font = &ankFont;
+
+      if (code == '\n') {
+        *y += height();
+        *x = 0;
+        if (*y >= tft->height()) {
+          break;
+        } else {
+          continue;
+        }
+      } else if (code == '\r') { // ignore
+        continue;
+      }
     }
-    // TODO: '\n'があったら次の行
-    // TODO: 長い行のwrap
 
     // XXX: 画面をはみ出るかチェックして、はみ出る場合は描画しない?
     if (color != bgcolor) {
       tft->fillRect(*x, *y, font->width(), font->height(), bgcolor);
     }
     int ret = font->draw(tft, x, y, code, color);
+    // TODO: 長い行のwrap
     if (*x >= tft->width()) {
       break;
     }

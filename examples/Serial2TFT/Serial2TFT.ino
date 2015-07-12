@@ -31,7 +31,7 @@ SdFatSoftSpi<SOFT_MISO_PIN, SOFT_MOSI_PIN, SOFT_SCK_PIN> sd;
 #define WHITE   0xFFFF
 
 SWTFT tft;
-TFTKanji tftkanji;
+TFTKanji tftkanji(&tft);
 
 int init_sd() {
   if (!sd.begin(SD_CHIP_SELECT_PIN)) {
@@ -77,14 +77,24 @@ int init_sd_font() {
 }
 
 void loop() {
+  static int x = 0;
   static int y = 0;
-  char buf[80];
-  memset(buf, 0, sizeof buf);
+  static char buf[3] = "";
   if (Serial.available()) {
-    int n = Serial.readBytesUntil('\n', buf, sizeof buf);
-    Serial.println(buf);
-    if (n <= 0) {
+    int ch = Serial.read();
+    if (ch < 0) {
       return;
+    }
+    Serial.print(ch, HEX);
+    if (buf[0] != '\0') { // SJIS 2nd byte
+      buf[1] = ch;
+      buf[2] = '\0';
+    } else if (TFTKanji::issjis1(ch)) { // SJIS 1st byte
+      buf[0] = ch;
+      return;
+    } else {
+      buf[0] = ch;
+      buf[1] = '\0';
     }
 
     if (!initdone) {
@@ -93,8 +103,7 @@ void loop() {
       }
     }
     if (initdone) {
-      int ret = tftkanji.draw(&tft, buf, 0, y, WHITE, BLACK);
-      y += tftkanji.height();
+      int ret = tftkanji.drawText(&x, &y, buf, WHITE, BLACK);
       if (y >= tft.height()) {
         y = 0;
       }
@@ -106,5 +115,6 @@ void loop() {
         }
       }
     }
+    buf[0] = '\0';
   }
 }
