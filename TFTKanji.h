@@ -2,7 +2,7 @@
 
 class TFTKanji {
   public:
-    TFTKanji();
+    TFTKanji(Adafruit_GFX *tft);
     virtual ~TFTKanji();
     int open(SdFatBase* sd, const char* kanjifile, const char* ankfile);
     bool close();
@@ -10,8 +10,8 @@ class TFTKanji {
      * 文字列を描画する
      * @return 描画したバイト数
      */
-    int draw(Adafruit_GFX *tft, const char* str, int16_t x, int16_t y, uint16_t color);
-    int draw(Adafruit_GFX *tft, const char* str, int16_t x, int16_t y, uint16_t color, uint16_t bgcolor);
+    int drawText(int16_t x, int16_t y, const char* str, uint16_t color);
+    int drawText(int16_t x, int16_t y, const char* str, uint16_t color, uint16_t bgcolor);
 
     /** 文字の高さ */
     int height() const {
@@ -23,8 +23,7 @@ class TFTKanji {
     }
 
   private:
-    int draw(Adafruit_GFX *tft, const char* str, int16_t x, int16_t y, uint16_t color, uint16_t bgcolor, bool drawbg);
-
+    Adafruit_GFX *tft;
     Fontx2 kanjiFont;
     Fontx2 ankFont;
 };

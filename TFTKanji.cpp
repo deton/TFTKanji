@@ -2,7 +2,7 @@
 
 #define DBGLOG 0
 
-TFTKanji::TFTKanji() {
+TFTKanji::TFTKanji(Adafruit_GFX *tft): tft(tft) {
 }
 
 TFTKanji::~TFTKanji() {
@@ -35,15 +35,13 @@ bool TFTKanji::close() {
   kanjiFont.close();
 }
 
-int TFTKanji::draw(Adafruit_GFX *tft, const char* str, int16_t x, int16_t y, uint16_t color) {
-  return draw(tft, str, x, y, color, 0, false);
+int TFTKanji::drawText(int16_t x, int16_t y, const char* str, uint16_t color) {
+  // bgcolorがcolorと同じ場合はbgcolorでのfillは行わない。フラグ不要にするため
+  // cf. Adafruit_GFX::setTextColor()
+  return drawText(x, y, str, color, color);
 }
 
-int TFTKanji::draw(Adafruit_GFX *tft, const char* str, int16_t x, int16_t y, uint16_t color, uint16_t bgcolor) {
-  return draw(tft, str, x, y, color, bgcolor, true);
-}
-
-int TFTKanji::draw(Adafruit_GFX *tft, const char* str, int16_t startx, int16_t y, uint16_t color, uint16_t bgcolor, bool drawbg) {
+int TFTKanji::drawText(int16_t startx, int16_t y, const char* str, uint16_t color, uint16_t bgcolor) {
   int x = startx;
   uint16_t kanji1 = 0;
   uint16_t code;
@@ -68,7 +66,7 @@ int TFTKanji::draw(Adafruit_GFX *tft, const char* str, int16_t startx, int16_t y
     // TODO: '\n'があったら次の行
 
     // XXX: 画面をはみ出るかチェックして、はみ出る場合は描画しない?
-    if (drawbg) {
+    if (color != bgcolor) {
       tft->fillRect(x, y, font->width(), font->height(), bgcolor);
     }
     int ret = font->draw(tft, code, x, y, color);
