@@ -35,14 +35,13 @@ bool TFTKanji::close() {
   kanjiFont.close();
 }
 
-int TFTKanji::drawText(int16_t x, int16_t y, const char* str, uint16_t color) {
+int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color) {
   // bgcolorがcolorと同じ場合はbgcolorでのfillは行わない。フラグ不要にするため
   // cf. Adafruit_GFX::setTextColor()
   return drawText(x, y, str, color, color);
 }
 
-int TFTKanji::drawText(int16_t startx, int16_t y, const char* str, uint16_t color, uint16_t bgcolor) {
-  int x = startx;
+int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor) {
   uint16_t kanji1 = 0;
   uint16_t code;
   const char* p = str;
@@ -64,14 +63,14 @@ int TFTKanji::drawText(int16_t startx, int16_t y, const char* str, uint16_t colo
       font = &ankFont;
     }
     // TODO: '\n'があったら次の行
+    // TODO: 長い行のwrap
 
     // XXX: 画面をはみ出るかチェックして、はみ出る場合は描画しない?
     if (color != bgcolor) {
-      tft->fillRect(x, y, font->width(), font->height(), bgcolor);
+      tft->fillRect(*x, *y, font->width(), font->height(), bgcolor);
     }
     int ret = font->draw(tft, x, y, code, color);
-    x += font->width();
-    if (x >= tft->width()) {
+    if (*x >= tft->width()) {
       break;
     }
 

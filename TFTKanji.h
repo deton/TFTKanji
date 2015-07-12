@@ -8,10 +8,11 @@ class TFTKanji {
     bool close();
     /**
      * 文字列を描画する
+     * @param x, y 描画開始位置。描画終了時に次の位置に更新される。
      * @return 描画したバイト数
      */
-    int drawText(int16_t x, int16_t y, const char* str, uint16_t color);
-    int drawText(int16_t x, int16_t y, const char* str, uint16_t color, uint16_t bgcolor);
+    int drawText(int16_t* x, int16_t* y, const char* str, uint16_t color);
+    int drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor);
 
     /** 文字の高さ */
     int height() const {

@@ -99,20 +99,20 @@ bool Fontx2::close() {
   return sdfile.close();
 }
 
-// from Adafruit_GFX::drawBitmap()
-void drawBitmap(Adafruit_GFX *tft, int16_t x, int16_t y,
-    const uint8_t *bitmap, int16_t w, int16_t h,
-    uint16_t color) {
+// cf. Adafruit_GFX::drawBitmap()
+void drawBitmap(Adafruit_GFX* tft, int16_t* x, int16_t* y,
+    const uint8_t *bitmap, int16_t w, int16_t h, uint16_t color) {
 
   int16_t i, j, byteWidth = (w + 7) / 8;
 
-  for(j=0; j<h; j++) {
-    for(i=0; i<w; i++ ) {
-      if(*(bitmap + j * byteWidth + i / 8) & (128 >> (i & 7))) {
-        tft->drawPixel(x+i, y+j, color);
+  for (j=0; j<h; j++) {
+    for (i=0; i<w; i++) {
+      if (*(bitmap + j * byteWidth + i / 8) & (128 >> (i & 7))) {
+        tft->drawPixel(*x + i, *y + j, color);
       }
     }
   }
+  *x += w;
 }
 
 int Fontx2::bitmapLen() {
@@ -145,7 +145,7 @@ uint32_t Fontx2::getKanjiAddr(uint16_t sjis) {
   return kanjiDataStart + bitmapLen() * adrs;
 }
 
-int Fontx2::readAndDrawBitmap(Adafruit_GFX *tft, int16_t x, int16_t y, int len, uint16_t color) {
+int Fontx2::readAndDrawBitmap(Adafruit_GFX* tft, int16_t* x, int16_t* y, int len, uint16_t color) {
   unsigned char bitmap[len]; // font bitmap read buffer 
   int ret;
   if ((ret = sdfile.read(&bitmap, len)) < len) {
@@ -169,7 +169,7 @@ int Fontx2::readAndDrawBitmap(Adafruit_GFX *tft, int16_t x, int16_t y, int len, 
   return 0;
 }
 
-int Fontx2::draw(Adafruit_GFX *tft, int16_t x, int16_t y, uint16_t sjis, uint16_t color) {
+int Fontx2::draw(Adafruit_GFX* tft, int16_t* x, int16_t* y, uint16_t sjis, uint16_t color) {
   if (!sdfile.isOpen()) {
     return -2;
   }

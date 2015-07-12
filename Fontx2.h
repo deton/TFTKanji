@@ -7,7 +7,14 @@ class Fontx2 {
     virtual ~Fontx2();
     int open(SdFatBase* sd, const char* filepath);
     bool close();
-    int draw(Adafruit_GFX *tft, int16_t x, int16_t y, uint16_t sjis, uint16_t color);
+    /**
+     * 指定したShift_JISコードの文字を描画する。
+     * @param x, y 描画開始位置。描画終了時に次の位置に更新される。
+     * @return 0: 成功。
+     *  -1: 指定された文字コードに対する文字データ無し。
+     *  それ以外: エラー発生
+     */
+    int draw(Adafruit_GFX* tft, int16_t* x, int16_t* y, uint16_t sjis, uint16_t color);
     /** 文字幅 */
     int width() const {
       return XSize;
@@ -23,7 +30,7 @@ class Fontx2 {
     uint32_t getKanjiAddr(uint16_t sjis);
     /** 1文字ぶんのビットマップデータのバイト数 */
     int bitmapLen();
-    int readAndDrawBitmap(Adafruit_GFX *tft, int16_t x, int16_t y, int len, uint16_t color);
+    int readAndDrawBitmap(Adafruit_GFX* tft, int16_t* x, int16_t* y, int len, uint16_t color);
 
     char            FontName[8+1];      // 06-13 Font name    
     unsigned char   XSize;              // 14            
