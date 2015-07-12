@@ -145,7 +145,7 @@ uint32_t Fontx2::getKanjiAddr(uint16_t sjis) {
   return kanjiDataStart + bitmapLen() * adrs;
 }
 
-int Fontx2::readAndDrawBitmap(Adafruit_GFX *tft, int len, int16_t x, int16_t y, uint16_t color) {
+int Fontx2::readAndDrawBitmap(Adafruit_GFX *tft, int16_t x, int16_t y, int len, uint16_t color) {
   unsigned char bitmap[len]; // font bitmap read buffer 
   int ret;
   if ((ret = sdfile.read(&bitmap, len)) < len) {
@@ -169,7 +169,7 @@ int Fontx2::readAndDrawBitmap(Adafruit_GFX *tft, int len, int16_t x, int16_t y, 
   return 0;
 }
 
-int Fontx2::draw(Adafruit_GFX *tft, uint16_t sjis, int16_t x, int16_t y, uint16_t color) {
+int Fontx2::draw(Adafruit_GFX *tft, int16_t x, int16_t y, uint16_t sjis, uint16_t color) {
   if (!sdfile.isOpen()) {
     return -2;
   }
@@ -193,5 +193,5 @@ int Fontx2::draw(Adafruit_GFX *tft, uint16_t sjis, int16_t x, int16_t y, uint16_
   }
 
   int len = bitmapLen();
-  return readAndDrawBitmap(tft, len, x, y, color);
+  return readAndDrawBitmap(tft, x, y, len, color);
 }

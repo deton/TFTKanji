@@ -69,7 +69,7 @@ int TFTKanji::drawText(int16_t startx, int16_t y, const char* str, uint16_t colo
     if (color != bgcolor) {
       tft->fillRect(x, y, font->width(), font->height(), bgcolor);
     }
-    int ret = font->draw(tft, code, x, y, color);
+    int ret = font->draw(tft, x, y, code, color);
     x += font->width();
     if (x >= tft->width()) {
       break;
