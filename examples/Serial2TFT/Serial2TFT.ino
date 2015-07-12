@@ -3,7 +3,7 @@
 
 #include <Adafruit_GFX.h>    // Core graphics library
 #include "SWTFT.h" // Hardware-specific library
-#include "TFTKanji.h"
+#include "TFTKanjiTerm.h"
 
 // 小伝馬町16
 #define kanji_file "GONZN16X.TLF"
@@ -31,7 +31,7 @@ SdFatSoftSpi<SOFT_MISO_PIN, SOFT_MOSI_PIN, SOFT_SCK_PIN> sd;
 #define WHITE   0xFFFF
 
 SWTFT tft;
-TFTKanji tftkanji(&tft);
+TFTKanjiTerm term(&tft);
 
 int init_sd() {
   if (!sd.begin(SD_CHIP_SELECT_PIN)) {
@@ -57,8 +57,8 @@ void setup() {
 }
 
 int init_font() {
-  int ret = tftkanji.open(&sd, kanji_file, ank_file);
-  Serial.print("tftkanji.open()=");
+  int ret = term.open(&sd, kanji_file, ank_file);
+  Serial.print("term.open()=");
   Serial.println(ret);
   return ret;
 }
@@ -77,44 +77,19 @@ int init_sd_font() {
 }
 
 void loop() {
-  static int x = 0;
-  static int y = 0;
-  static char buf[3] = "";
   if (Serial.available()) {
     int ch = Serial.read();
     if (ch < 0) {
       return;
     }
     Serial.print(ch, HEX);
-    if (buf[0] != '\0') { // SJIS 2nd byte
-      buf[1] = ch;
-      buf[2] = '\0';
-    } else if (TFTKanji::issjis1(ch)) { // SJIS 1st byte
-      buf[0] = ch;
-      return;
-    } else {
-      buf[0] = ch;
-      buf[1] = '\0';
-    }
-
     if (!initdone) {
       if (init_sd_font() == 0) {
         initdone = 1;
       }
     }
     if (initdone) {
-      int ret = tftkanji.drawText(&x, &y, buf, WHITE, BLACK);
-      if (y >= tft.height()) {
-        y = 0;
-      }
-
-      if (ret < -1) { // ignore no kanji data error(-1)
-        ret = init_font(); // re-init
-        if (ret != 0) {
-          initdone = 0;
-        }
-      }
+      term.addch(ch);
     }
-    buf[0] = '\0';
   }
 }
