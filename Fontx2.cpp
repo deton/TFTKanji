@@ -71,11 +71,11 @@ int Fontx2::open(SdFatBase* sd, const char* filepath) {
   end   = new uint16_t[Tnum];
   for (int a = 0; a < Tnum; a++) {
     if (sdfile.read(&start[a], 2) < 2) {
-      sdfile.close();
+      close();
       return -9;
     }
     if (sdfile.read(&end[a], 2) < 2) {
-      sdfile.close();
+      close();
       return -10;
     }
 #if DBGLOG
