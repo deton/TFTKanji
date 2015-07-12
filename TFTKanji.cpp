@@ -2,7 +2,7 @@
 
 #define DBGLOG 0
 
-TFTKanji::TFTKanji(Adafruit_GFX *tft): tft(tft) {
+TFTKanji::TFTKanji(Adafruit_GFX *tft) :tft(tft) {
 }
 
 TFTKanji::~TFTKanji() {
@@ -32,7 +32,7 @@ int TFTKanji::open(SdFatBase* sd, const char* kanjifile, const char* ankfile) {
 
 bool TFTKanji::close() {
   ankFont.close();
-  kanjiFont.close();
+  return kanjiFont.close();
 }
 
 int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color) {

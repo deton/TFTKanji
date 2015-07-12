@@ -67,8 +67,17 @@ int Fontx2::open(SdFatBase* sd, const char* filepath) {
 #endif
 
   // Table read
-  start = new uint16_t[Tnum];
-  end   = new uint16_t[Tnum];
+  // XXX: newでなくcalloc()を使用。Arduinoだとnewは単にmalloc()してるだけなので
+  start = (uint16_t*)calloc(Tnum, sizeof(uint16_t));
+  if (start == NULL) {
+    close();
+    return -8;
+  }
+  end   = (uint16_t*)calloc(Tnum, sizeof(uint16_t));
+  if (end == NULL) {
+    close();
+    return -8;
+  }
   for (int a = 0; a < Tnum; a++) {
     if (sdfile.read(&start[a], 2) < 2) {
       close();
@@ -89,11 +98,11 @@ int Fontx2::open(SdFatBase* sd, const char* filepath) {
 
 bool Fontx2::close() {
   if (end != NULL) {
-    delete[] end;
+    free(end);
     end = NULL;
   }
   if (start != NULL) {
-    delete[] start;
+    free(start);
     start = NULL;
   }
   return sdfile.close();
