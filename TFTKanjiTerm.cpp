@@ -6,7 +6,8 @@ const uint16_t WHITE = 0xFFFF;
 const uint16_t BLACK = 0x0000;
 
 TFTKanjiTerm::TFTKanjiTerm(Adafruit_GFX *tft)
-  :tftkanji(tft), state(ST_PRINTABLE), x(0), y(0), color(BLACK), bgcolor(WHITE) {
+  :tft(tft), tftkanji(tft), state(ST_PRINTABLE), x(0), y(0),
+   color(BLACK), bgcolor(WHITE) {
   sjisbuf[0] = '\0';
 }
 
@@ -34,6 +35,11 @@ int TFTKanjiTerm::addch(int ch) {
     sjisbuf[1] = '\0';
   }
 
+  // scrollというかpage down
+  if (y >= tft->height()) {
+    tft->fillScreen(bgcolor);
+    y = 0;
+  }
   int ret = tftkanji.drawText(&x, &y, sjisbuf, color, bgcolor);
   sjisbuf[0] = '\0';
   if (ret <= 0) {

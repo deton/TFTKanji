@@ -18,4 +18,5 @@ class TFTKanjiTerm {
     uint16_t color;
     uint16_t bgcolor;
     TFTKanji tftkanji;
+    Adafruit_GFX* tft;
 };
