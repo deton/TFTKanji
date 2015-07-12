@@ -5,6 +5,11 @@ class Fontx2 {
   public:
     Fontx2();
     virtual ~Fontx2();
+    /**
+     * フォントファイルを開く。
+     * @param filepath SDカードのルートディレクトリにあるファイル名。
+     * @return 0: 成功時。それ以外: エラー発生
+     */
     int open(SdFatBase* sd, const char* filepath);
     bool close();
     /**

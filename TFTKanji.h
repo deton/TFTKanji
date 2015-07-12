@@ -19,6 +19,11 @@ class TFTKanji {
       return max(kanjiFont.height(), ankFont.height());
     }
 
+    /** ANK文字の幅 */
+    int ankWidth() const {
+      return ankFont.width();
+    }
+
     /** SJISの第1バイトかどうか */
     static bool issjis1(int c) {
       return (c >= 0x81 && c <= 0x9f || c >= 0xe0 && c <= 0xff);

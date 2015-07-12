@@ -10,9 +10,12 @@ class TFTKanjiTerm {
     int addch(int ch);
 
   private:
-    enum State { ST_PRINTABLE, ST_SJIS1, ST_ESC, ST_ESC_DIGIT };
+    enum State { ST_PRINT, ST_SJIS1, ST_ESC, ST_CSI, ST_ESC_DIGIT };
     State state;
-    char sjisbuf[3];
+    char buf[3];
+    int escparam[3]; // only support "ESC[row;colH", "ESC[2J", "ESC[K"
+    int nparam;
+
     int16_t x;
     int16_t y;
     uint16_t color;
