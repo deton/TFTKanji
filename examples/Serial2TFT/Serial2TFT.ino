@@ -5,7 +5,7 @@
 #include "SWTFT.h" // Hardware-specific library
 #include "TFTKanji.h"
 
-#define SD_SS_PIN 10
+// 小伝馬町16
 #define kanji_file "GONZN16X.TLF"
 #define ank_file   "GONHN16X.TLF"
 
@@ -34,7 +34,7 @@ SWTFT tft;
 TFTKanji tftkanji;
 
 int init_sd() {
-  if (!sd.begin(SD_SS_PIN)) {
+  if (!sd.begin(SD_CHIP_SELECT_PIN)) {
     sd.initErrorHalt();
     return -1;
   }
@@ -48,7 +48,7 @@ void setup() {
   while (!Serial) { // これがないとIDEからの書き込みがエラーになる
     // wait for Leonardo
   }
-  pinMode(SD_SS_PIN, OUTPUT);
+  pinMode(SD_CHIP_SELECT_PIN, OUTPUT);
 
   tft.reset();
   uint16_t identifier = tft.readID();
