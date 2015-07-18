@@ -6,25 +6,25 @@ class TFTKanji {
     virtual ~TFTKanji();
     int open(SdFatBase* sd, const char* kanjifile, const char* ankfile);
     bool close();
-    /**
+    /*!
      * 文字列を描画する
-     * @param x, y 描画開始位置。描画終了時に次の位置に更新される。
-     * @return 描画したバイト数
+     * \param [in,out] x, y 描画開始位置。描画終了時に次の位置に更新される。
+     * \return 描画したバイト数
      */
     int drawText(int16_t* x, int16_t* y, const char* str, uint16_t color);
     int drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor);
 
-    /** 文字の高さ */
+    /*! 文字の高さ */
     int height() const {
       return max(kanjiFont.height(), ankFont.height());
     }
 
-    /** ANK文字の幅 */
+    /*! ANK文字の幅 */
     int ankWidth() const {
       return ankFont.width();
     }
 
-    /** SJISの第1バイトかどうか */
+    /*! SJISの第1バイトかどうか */
     static bool issjis1(int c) {
       return (c >= 0x81 && c <= 0x9f || c >= 0xe0 && c <= 0xff);
     }

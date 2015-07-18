@@ -89,7 +89,11 @@ void loop() {
       }
     }
     if (initdone) {
-      term.addch(ch);
+      int ret = term.addch(ch);
+      if (ret <= 0) {
+        Serial.print("NG term.addch():");
+        Serial.println(ret);
+      }
     }
   }
 }

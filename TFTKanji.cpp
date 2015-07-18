@@ -35,6 +35,35 @@ bool TFTKanji::close() {
   return kanjiFont.close();
 }
 
+// cf. Adafruit_GFX::drawBitmap()
+void drawBitmap(Adafruit_GFX* tft, int16_t x, int16_t y,
+    const uint8_t *bitmap, int16_t w, int16_t h,
+    uint16_t color, uint16_t bgcolor) {
+
+  int16_t i, j, byteWidth = (w + 7) / 8;
+
+  for (j=0; j<h; j++) {
+    for (i=0; i<w; i++) {
+      if (*(bitmap + j * byteWidth + i / 8) & (128 >> (i & 7))) {
+        tft->drawPixel(x + i, y + j, color);
+      } else if (bgcolor != color) {
+        tft->drawPixel(x + i, y + j, bgcolor);
+      }
+    }
+  }
+}
+
+int loadFontAndDraw(Adafruit_GFX* tft, int16_t x, int16_t y,
+    const Fontx2& font, uint16_t code, uint16_t color, uint16_t bgcolor) {
+  int len = font.bitmapLen();
+  uint8_t buf[len];
+  int ret = font.load(code, buf, len);
+  if (ret == 0) {
+    drawBitmap(tft, x, y, buf, font.width(), font.height(), color, bgcolor);
+  }
+  return ret;
+}
+
 int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color) {
   // bgcolorがcolorと同じ場合はbgcolorでのfillは行わない。フラグ不要にするため
   // cf. Adafruit_GFX::setTextColor()
@@ -43,26 +72,24 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color) 
 
 int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor) {
   uint16_t sjis1 = 0;
-  uint16_t code;
   const char* p = str;
   for (; *p != '\0'; p++) {
-    Fontx2 *font;
     uint8_t ch = (uint8_t)*p;
+    int ret = 0;
+    int fontWidth = 0;
 #if DBGLOG
     Serial.print(ch, HEX);
 #endif
     if (sjis1) { // SJIS 2nd byte
-      code = (sjis1 << 8) | ch;
+      uint16_t code = (sjis1 << 8) | ch;
       sjis1 = 0;
-      font = &kanjiFont;
+      ret = loadFontAndDraw(tft, *x, *y, kanjiFont, code, color, bgcolor);
+      fontWidth = kanjiFont.width();
     } else if (issjis1(ch)) { // SJIS 1st byte
       sjis1 = ch;
       continue;
     } else {
-      code = ch;
-      font = &ankFont;
-
-      if (code == '\n') {
+      if (ch == '\n') {
         *y += height();
         *x = 0;
         if (*y >= tft->height()) {
@@ -70,23 +97,20 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, 
         } else {
           continue;
         }
-      } else if (code == '\r') { // ignore
+      } else if (ch == '\r') { // ignore
         continue;
       }
-    }
-
-    // XXX: 画面をはみ出るかチェックして、はみ出る場合は描画しない?
-    if (color != bgcolor) {
-      tft->fillRect(*x, *y, font->width(), font->height(), bgcolor);
-    }
-    int ret = font->draw(tft, x, y, code, color);
-    // TODO: 長い行のwrap
-    if (*x >= tft->width()) {
-      break;
+      ret = loadFontAndDraw(tft, *x, *y, ankFont, ch, color, bgcolor);
+      fontWidth = ankFont.width();
     }
 
     if (ret < -1) {
       return ret;
+    } // -1の場合、指定した文字のフォントデータ無し
+    *x += fontWidth;
+    // TODO: 長い行のwrap
+    if (*x >= tft->width()) {
+      break;
     }
   }
   return p - str;

@@ -108,32 +108,16 @@ bool Fontx2::close() {
   return sdfile.close();
 }
 
-// cf. Adafruit_GFX::drawBitmap()
-void drawBitmap(Adafruit_GFX* tft, int16_t* x, int16_t* y,
-    const uint8_t *bitmap, int16_t w, int16_t h, uint16_t color) {
-
-  int16_t i, j, byteWidth = (w + 7) / 8;
-
-  for (j=0; j<h; j++) {
-    for (i=0; i<w; i++) {
-      if (*(bitmap + j * byteWidth + i / 8) & (128 >> (i & 7))) {
-        tft->drawPixel(*x + i, *y + j, color);
-      }
-    }
-  }
-  *x += w;
-}
-
-int Fontx2::bitmapLen() {
+int Fontx2::bitmapLen() const {
   int byteWidth = (width() + 7) / 8;
   return byteWidth * height();
 }
 
-uint32_t Fontx2::getAnkAddr(uint16_t ank) {
+uint32_t Fontx2::getAnkAddr(uint16_t ank) const {
   return ANK_DATA_START + ank * bitmapLen();
 }
 
-uint32_t Fontx2::getKanjiAddr(uint16_t sjis) {
+uint32_t Fontx2::getKanjiAddr(uint16_t sjis) const {
   int c = 0;
   uint32_t adrs = 0;
   while(sjis > start[c]){
@@ -154,31 +138,7 @@ uint32_t Fontx2::getKanjiAddr(uint16_t sjis) {
   return kanjiDataStart + bitmapLen() * adrs;
 }
 
-int Fontx2::readAndDrawBitmap(Adafruit_GFX* tft, int16_t* x, int16_t* y, int len, uint16_t color) {
-  unsigned char bitmap[len]; // font bitmap read buffer 
-  int ret;
-  if ((ret = sdfile.read(&bitmap, len)) < len) {
-#if DBGLOG
-    Serial.print("read error:");
-    Serial.println(ret);
-#endif
-    return -4;
-  }
-
-#if DBGLOG
-  // debug dump
-  for (int s = 0; s < len; s++){
-    Serial.print(bitmap[s], HEX);
-    Serial.print(' ');
-  }
-  Serial.println(); 
-#endif
-
-  drawBitmap(tft, x, y, bitmap, XSize, YSize, color);
-  return 0;
-}
-
-int Fontx2::draw(Adafruit_GFX* tft, int16_t* x, int16_t* y, uint16_t sjis, uint16_t color) {
+int Fontx2::load(uint16_t sjis, uint8_t* buf, int bufsize) const {
   if (!sdfile.isOpen()) {
     return -2;
   }
@@ -195,12 +155,31 @@ int Fontx2::draw(Adafruit_GFX* tft, int16_t* x, int16_t* y, uint16_t sjis, uint1
     return -1; // 指定された文字コードに対する文字データ無し
   }
   if (!sdfile.seekSet(adrs)) {
-#if DBGLOG
-    Serial.println("seek failed");
-#endif
     return -1;
   }
 
   int len = bitmapLen();
-  return readAndDrawBitmap(tft, x, y, len, color);
+  if (bufsize < len) {
+    return -3;
+  }
+
+  int ret;
+  if ((ret = sdfile.read(buf, len)) < len) {
+#if DBGLOG
+    Serial.print("read error:");
+    Serial.println(ret);
+#endif
+    return -4;
+  }
+
+#if DBGLOG
+  // debug dump
+  for (int s = 0; s < len; s++){
+    Serial.print(buf[s], HEX);
+    Serial.print(' ');
+  }
+  Serial.println(); 
+#endif
+
+  return 0;
 }
