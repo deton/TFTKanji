@@ -38,16 +38,14 @@ bool TFTKanji::close() {
 // cf. Adafruit_GFX::drawBitmap()
 void drawBitmap(Adafruit_GFX* tft, int16_t x, int16_t y,
     const uint8_t *bitmap, int16_t w, int16_t h,
-    uint16_t color, uint16_t bgcolor) {
+    uint16_t color) {
 
   int16_t i, j, byteWidth = (w + 7) / 8;
 
-  for (j=0; j<h; j++) {
+  for (j=0; j<h; j++, bitmap += byteWidth) {
     for (i=0; i<w; i++) {
-      if (*(bitmap + j * byteWidth + i / 8) & (128 >> (i & 7))) {
+      if (*(bitmap + i / 8) & (128 >> (i & 7))) {
         tft->drawPixel(x + i, y + j, color);
-      } else if (bgcolor != color) {
-        tft->drawPixel(x + i, y + j, bgcolor);
       }
     }
   }
@@ -59,7 +57,10 @@ int loadFontAndDraw(Adafruit_GFX* tft, int16_t x, int16_t y,
   uint8_t buf[len];
   int ret = font.load(code, buf, len);
   if (ret == 0) {
-    drawBitmap(tft, x, y, buf, font.width(), font.height(), color, bgcolor);
+    if (bgcolor != color) {
+      tft->fillRect(x, y, font.width(), font.height(), bgcolor);
+    }
+    drawBitmap(tft, x, y, buf, font.width(), font.height(), color);
   }
   return ret;
 }
