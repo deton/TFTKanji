@@ -31,7 +31,26 @@ SdFatSoftSpi<SOFT_MISO_PIN, SOFT_MOSI_PIN, SOFT_SCK_PIN> sd;
 #define WHITE   0xFFFF
 
 SWTFT tft;
-TFTKanjiTerm term(&tft);
+
+class Screen: public IFillScreen {
+  public:
+    virtual void drawPixel(int16_t x, int16_t y, uint16_t color) {
+      tft.drawPixel(x, y, color);
+    }
+    virtual void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
+      tft.fillRect(x, y, w, h, color);
+    }
+    virtual int16_t width() {
+      return tft.width();
+    }
+    virtual int16_t height() {
+      return tft.height();
+    }
+    virtual void fillScreen(uint16_t color) {
+      tft.fillScreen(color);
+    }
+} screen;
+TFTKanjiTerm term(&screen);
 
 int init_sd() {
   if (!sd.begin(SD_CHIP_SELECT_PIN)) {

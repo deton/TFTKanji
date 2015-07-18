@@ -2,7 +2,7 @@
 
 #define DBGLOG 0
 
-TFTKanji::TFTKanji(Adafruit_GFX *tft) :tft(tft) {
+TFTKanji::TFTKanji(IScreen* tft) :tft(tft) {
 }
 
 TFTKanji::~TFTKanji() {
@@ -36,7 +36,7 @@ bool TFTKanji::close() {
 }
 
 // cf. Adafruit_GFX::drawBitmap()
-void drawBitmap(Adafruit_GFX* tft, int16_t x, int16_t y,
+void drawBitmap(IScreen* tft, int16_t x, int16_t y,
     const uint8_t *bitmap, int16_t w, int16_t h,
     uint16_t color) {
 
@@ -51,7 +51,7 @@ void drawBitmap(Adafruit_GFX* tft, int16_t x, int16_t y,
   }
 }
 
-int loadFontAndDraw(Adafruit_GFX* tft, int16_t x, int16_t y,
+int loadFontAndDraw(IScreen* tft, int16_t x, int16_t y,
     const Fontx2& font, uint16_t code, uint16_t color, uint16_t bgcolor) {
   int len = font.bitmapLen();
   uint8_t buf[len];

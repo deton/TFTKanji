@@ -1,5 +1,4 @@
 #include <SdFat.h>
-#include <Adafruit_GFX.h>
 
 class Fontx2 {
   public:

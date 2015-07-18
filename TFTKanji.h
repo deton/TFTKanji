@@ -1,8 +1,16 @@
 #include "Fontx2.h"
 
+class IScreen {
+  public:
+    virtual void drawPixel(int16_t x, int16_t y, uint16_t color) = 0;
+    virtual void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) = 0;
+    virtual int16_t width() = 0;
+    virtual int16_t height() = 0;
+};
+
 class TFTKanji {
   public:
-    TFTKanji(Adafruit_GFX *tft);
+    TFTKanji(IScreen* tft);
     virtual ~TFTKanji();
     int open(SdFatBase* sd, const char* kanjifile, const char* ankfile);
     bool close();
@@ -30,7 +38,7 @@ class TFTKanji {
     }
 
   private:
-    Adafruit_GFX *tft;
+    IScreen* tft;
     Fontx2 kanjiFont;
     Fontx2 ankFont;
 };

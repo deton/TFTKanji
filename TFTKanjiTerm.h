@@ -1,9 +1,14 @@
 #include "TFTKanji.h"
 
-/** 漢字対応テキスト端末画面 */
+class IFillScreen: public IScreen {
+  public:
+    virtual void fillScreen(uint16_t color) = 0;
+};
+
+/*! 漢字対応テキスト端末画面 */
 class TFTKanjiTerm {
   public:
-    TFTKanjiTerm(Adafruit_GFX *tft);
+    TFTKanjiTerm(IFillScreen* tft);
     virtual ~TFTKanjiTerm();
     int open(SdFatBase* sd, const char* kanjifile, const char* ankfile);
     bool close();
@@ -21,5 +26,5 @@ class TFTKanjiTerm {
     uint16_t color;
     uint16_t bgcolor;
     TFTKanji tftkanji;
-    Adafruit_GFX* tft;
+    IFillScreen* tft;
 };

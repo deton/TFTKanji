@@ -7,7 +7,7 @@ const uint16_t BLACK = 0x0000;
 
 const char ESC = '\x1b';
 
-TFTKanjiTerm::TFTKanjiTerm(Adafruit_GFX *tft)
+TFTKanjiTerm::TFTKanjiTerm(IFillScreen* tft)
   :tft(tft), tftkanji(tft), state(ST_PRINT), x(0), y(0),
    color(BLACK), bgcolor(WHITE) {
   buf[0] = '\0';
