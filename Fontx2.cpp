@@ -4,7 +4,7 @@
 
 const int ANK_DATA_START = 17;
 
-Fontx2::Fontx2() :start(NULL), end(NULL) {
+Fontx2::Fontx2() :_width(0), _height(0), tnum(0), table(NULL) {
 }
 
 Fontx2::~Fontx2() {
@@ -51,42 +51,32 @@ int Fontx2::open(SdFatBase* sd, const char* filepath) {
 
   // Table read
   // XXX: newでなくcalloc()を使用。Arduinoだとnewは単にmalloc()してるだけなので
-  start = (uint16_t*)calloc(tnum, sizeof(uint16_t));
-  if (start == NULL) {
+  table = (Table*)calloc(tnum, sizeof(Table));
+  if (table == NULL) {
     close();
     return -8;
   }
-  end   = (uint16_t*)calloc(tnum, sizeof(uint16_t));
-  if (end == NULL) {
+  // assert(sizeof(Table) == sizeof(short) * 2); // no padding in struct
+  // assert little endian
+  int len = tnum * sizeof(short) * 2;
+  if (sdfile.read(table, len) < len) {
     close();
-    return -8;
+    return -9;
   }
-  for (int a = 0; a < tnum; a++) {
-    if (sdfile.read(&start[a], 2) < 2) {
-      close();
-      return -9;
-    }
-    if (sdfile.read(&end[a], 2) < 2) {
-      close();
-      return -10;
-    }
 #if DBGLOG
+  for (int a = 0; a < tnum; a++) {
     Serial.print("Table No."); Serial.print(a);
-    Serial.print(" start:"); Serial.print(start[a], HEX);
-    Serial.print(" end:"); Serial.println(end[a], HEX);
-#endif
+    Serial.print(" start:"); Serial.print(table[a].start, HEX);
+    Serial.print(" end:"); Serial.println(table[a].end, HEX);
   }
+#endif
   return 0;
 }
 
 bool Fontx2::close() {
-  if (end != NULL) {
-    free(end);
-    end = NULL;
-  }
-  if (start != NULL) {
-    free(start);
-    start = NULL;
+  if (table != NULL) {
+    free(table);
+    table = NULL;
   }
   return sdfile.close();
 }
@@ -103,11 +93,11 @@ uint32_t Fontx2::getAnkAddr(uint16_t ank) const {
 uint32_t Fontx2::getKanjiAddr(uint16_t sjis) const {
   int c = 0;
   uint32_t adrs = 0;
-  while(sjis > start[c]){
-    if (sjis > end[c]){
-      adrs += end[c] - start[c] + 1;
+  while(sjis > table[c].start){
+    if (sjis > table[c].end){
+      adrs += table[c].end - table[c].start + 1;
     } else {
-      adrs += sjis - start[c];
+      adrs += sjis - table[c].start;
     }
     c++;
   }

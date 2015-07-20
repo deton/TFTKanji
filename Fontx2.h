@@ -38,10 +38,10 @@ class Fontx2 {
     uint8_t _width;
     uint8_t _height;
     uint8_t tnum;
-
-    // table
-    uint16_t* start;
-    uint16_t* end;
+    struct Table {
+      uint16_t start;
+      uint16_t end;
+    } *table;
 
     mutable FatFile sdfile;
 };

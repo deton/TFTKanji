@@ -1,6 +1,13 @@
 #include <SPI.h>
 #include <SdFat.h>
 
+// accept command from MPU for Arduino Yun/Linino ONE
+//#define CMD_FROM_MPU 1
+#if CMD_FROM_MPU  // accept command from MPU for Arduino Yun/Linino ONE
+//#include <Console.h> // includeするとスケッチサイズが増える
+#define Serial Console
+#endif
+
 #include <Adafruit_GFX.h>    // Core graphics library
 #include "SWTFT.h" // Hardware-specific library
 #include "TFTKanjiTerm.h"
@@ -48,6 +55,7 @@ class Screen: public IFillScreen {
     }
     virtual void fillScreen(uint16_t color) {
       tft.fillScreen(color);
+      //fillRect(0, 0, width(), height(), color);
     }
 } screen;
 TFTKanjiTerm term(&screen);
@@ -63,10 +71,15 @@ int init_sd() {
 int initdone = 0;
 
 void setup() {
+#if CMD_FROM_MPU
+  Bridge.begin(115200);
+  Console.begin();
+#else
   Serial.begin(115200);
   while (!Serial) { // これがないとIDEからの書き込みがエラーになる
     // wait for Leonardo
   }
+#endif
   pinMode(SD_CHIP_SELECT_PIN, OUTPUT);
 
   tft.reset();
