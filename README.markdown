@@ -34,6 +34,11 @@ TFT LCDに表示するためのライブラリです。
   電源オン直後はSDカードが読めるが、Linuxが起動すると読めなくなる。
   software spiを使うためSdFatライブラリを使用。
 
+* [bdf2fontx.cをANKフォント対応するパッチ](https://gist.github.com/deton/acf8f59e27b25d547bb1)。
+  [bdf2fontx.c](http://www.wheel.gr.jp/~dai/fonts/fontx.html) 0.1に対するパッチ。
+  jiskan24、Kappa20、Ayu 18、ナガ10フォントを、
+  BDF形式からfontx2形式に変換する際に使用。
+
 ## 拡張案
 * HTTPで受信した文字列をTFT LCD表示。
   Serial2TFTをConsoleから読むようにすれば可能だが、
