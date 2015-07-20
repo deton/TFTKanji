@@ -24,26 +24,24 @@ class Fontx2 {
     int bitmapLen() const;
     /*! 文字幅 */
     int width() const {
-      return XSize;
+      return _width;
     }
     /*! 文字高さ */
     int height() const {
-      return YSize;
+      return _height;
     }
 
   private:
     uint32_t getAnkAddr(uint16_t ank) const;
     uint32_t getKanjiAddr(uint16_t sjis) const;
 
-    char            FontName[8+1];      // 06-13 Font name    
-    unsigned char   XSize;              // 14            
-    unsigned char   YSize;              // 15
-    unsigned char   CodeType;           // 16 0:ANK, 1:KANJI   
-    unsigned char   Tnum;               // 17 Table entry number
+    uint8_t _width;
+    uint8_t _height;
+    uint8_t tnum;
 
     // table
     uint16_t* start;
     uint16_t* end;
 
-    mutable SdFile sdfile;
+    mutable FatFile sdfile;
 };
