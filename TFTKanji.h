@@ -1,16 +1,28 @@
+#ifndef __TFTKANJI_H__
+#define __TFTKANJI_H__
 #include "Fontx2.h"
 
-class IScreen {
+/*! スクリーンへの描画やサイズ取得を行うためのインタフェースクラス */
+class ITKScreen { // ITK: Interface class for TftKanji
   public:
     virtual void drawPixel(int16_t x, int16_t y, uint16_t color) = 0;
     virtual void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) = 0;
+    // XXX: fillScreen()はTFTKanjiでは不要。TFTKanjiTermで使用。
+    // プログラムサイズ削減のためTFTKanjiTerm用にサブクラスを作るのはやめた
+    virtual void fillScreen(uint16_t color) {
+      fillRect(0, 0, width(), height(), color);
+    }
     virtual int16_t width() = 0;
     virtual int16_t height() = 0;
 };
 
+/*!
+ * TFT LCDに漢字を含む文字列を描画するクラス。
+ * 各文字の描画時に、SDカード上のfontx2ファイルから文字のビットマップを読み込む
+ */
 class TFTKanji {
   public:
-    TFTKanji(IScreen* tft);
+    TFTKanji(ITKScreen* tft);
     virtual ~TFTKanji();
     int open(SdFatBase* sd, const char* kanjifile, const char* ankfile);
     bool close();
@@ -38,7 +50,8 @@ class TFTKanji {
     }
 
   private:
-    IScreen* tft;
+    ITKScreen* tft;
     Fontx2 kanjiFont;
     Fontx2 ankFont;
 };
+#endif // __TFTKANJI_H__

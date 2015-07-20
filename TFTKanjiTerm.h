@@ -1,14 +1,15 @@
+#ifndef __TFTKANJITERM_H__
+#define __TFTKANJITERM_H__
 #include "TFTKanji.h"
 
-class IFillScreen: public IScreen {
-  public:
-    virtual void fillScreen(uint16_t color) = 0;
-};
-
-/*! 漢字対応テキスト端末画面 */
+/*!
+ * 漢字対応テキスト端末画面。
+ * エスケープシーケンス対応。"ESC[row;colH", "ESC[2J", "ESC[K"
+ * ("\n"はTFTKanjiクラスで対応)
+ */
 class TFTKanjiTerm {
   public:
-    TFTKanjiTerm(IFillScreen* tft);
+    TFTKanjiTerm(ITKScreen* tft);
     virtual ~TFTKanjiTerm();
     int open(SdFatBase* sd, const char* kanjifile, const char* ankfile);
     bool close();
@@ -26,5 +27,6 @@ class TFTKanjiTerm {
     uint16_t color;
     uint16_t bgcolor;
     TFTKanji tftkanji;
-    IFillScreen* tft;
+    ITKScreen* tft;
 };
+#endif // __TFTKANJITERM_H__

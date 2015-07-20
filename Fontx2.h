@@ -1,5 +1,8 @@
+#ifndef __FONTX2_H__
+#define __FONTX2_H__
 #include <SdFat.h>
 
+/*! fontx2フォントデータの読み込みを行うためのクラス */
 class Fontx2 {
   public:
     Fontx2();
@@ -45,3 +48,4 @@ class Fontx2 {
 
     mutable FatFile sdfile;
 };
+#endif // __FONTX2_H__

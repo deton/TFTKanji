@@ -39,7 +39,7 @@ SdFatSoftSpi<SOFT_MISO_PIN, SOFT_MOSI_PIN, SOFT_SCK_PIN> sd;
 
 SWTFT tft;
 
-class Screen: public IFillScreen {
+class Screen: public ITKScreen {
   public:
     virtual void drawPixel(int16_t x, int16_t y, uint16_t color) {
       tft.drawPixel(x, y, color);
@@ -55,7 +55,6 @@ class Screen: public IFillScreen {
     }
     virtual void fillScreen(uint16_t color) {
       tft.fillScreen(color);
-      //fillRect(0, 0, width(), height(), color);
     }
 } screen;
 TFTKanjiTerm term(&screen);
