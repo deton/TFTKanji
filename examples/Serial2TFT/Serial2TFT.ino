@@ -39,6 +39,7 @@ SdFatSoftSpi<SOFT_MISO_PIN, SOFT_MOSI_PIN, SOFT_SCK_PIN> sd;
 
 SWTFT tft;
 
+#if USE_ITKSCREEN
 class Screen: public ITKScreen {
   public:
     virtual void drawPixel(int16_t x, int16_t y, uint16_t color) {
@@ -58,6 +59,9 @@ class Screen: public ITKScreen {
     }
 } screen;
 TFTKanjiTerm term(&screen);
+#else
+TFTKanjiTerm term(&tft);
+#endif
 
 int init_sd() {
   if (!sd.begin(SD_CHIP_SELECT_PIN)) {

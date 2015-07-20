@@ -2,6 +2,8 @@
 #define __TFTKANJI_H__
 #include "Fontx2.h"
 
+#define USE_ITKSCREEN 0
+#if USE_ITKSCREEN
 /*! スクリーンへの描画やサイズ取得を行うためのインタフェースクラス */
 class ITKScreen { // ITK: Interface class for TftKanji
   public:
@@ -15,6 +17,10 @@ class ITKScreen { // ITK: Interface class for TftKanji
     virtual int16_t width() = 0;
     virtual int16_t height() = 0;
 };
+#else
+# include <Adafruit_GFX.h>
+# define ITKScreen Adafruit_GFX
+#endif
 
 /*!
  * TFT LCDに漢字を含む文字列を描画するクラス。
