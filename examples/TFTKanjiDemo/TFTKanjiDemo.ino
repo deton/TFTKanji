@@ -11,11 +11,18 @@ struct {
   const char* message;
 } fonts[] = {
   // XXX: messageはShift_JISエンコード
-  // ILゴシックB
+  // ILゴシック
   // http://ayati.cocolog-nifty.com/blog/2012/08/ipalx322416-64a.html
-  {"ILGZ32XF.FNT", "ILGH32XF.FNT", "IL\x83\x53\x83\x56\x83\x62\x83\x4e\x42(32x32)"},
-  // IL明朝
-  {"ILMZ24XB.FNT", "ILMH24XB.FNT", "IL\x96\xbe\x92\xa9(24x24)"},
+  {"ILGZ32XB.FNT", "ILGH32XB.FNT", "IL\x83\x53\x83\x56\x83\x62\x83\x4e(32x32)"},
+  // jiskan24
+  // http://openlab.ring.gr.jp/efont/japanese/
+  {"jiskan24.fnt", "12x24rk.fnt", "jiskan24(24x24)"},
+  // Kappa 20dot Font
+  // http://www.vector.co.jp/soft/data/writing/se083507.html
+  {"k20m.fnt", "10x20rkm.fnt", "Kappa20(20x20)"},
+  // Ayu 18ドットゴシック
+  // http://x-tt.osdn.jp/ayu.html
+  {"k18gm.fnt", "9x18gm.fnt", "Ayu 18\x83\x68\x83\x62\x83\x67\x83\x53\x83\x56\x83\x62\x83\x4e(18x18)"},
   // ぱう
   // http://udumaki.s36.xrea.com/
   {"PAW16K.FNT", "PAW16A.FNT", "\x82\xcf\x82\xa4(16x16)"},
@@ -34,6 +41,9 @@ struct {
   {"k12x10.fnt", "k6x10.fnt", "k12x10(12x10)"},
   // http://www.vector.co.jp/soft/data/writing/se026704.html
   {"GENZN08X.FNT", "GENHN08X.FNT", "genfont(16x8)"},
+  // ナガ10
+  // http://hp.vector.co.jp/authors/VA013391/fonts/
+  {"knj10.fnt", "5x10rk.fnt", "\x83\x69\x83\x4b\x31\x30(10x10)"},
   // 美咲
   // http://www.geocities.jp/littlimi/misaki.htm
   {"MISAKI.FNT", "4X8.FNT", "\x94\xfc\x8d\xe7(8x8)"},
@@ -63,7 +73,7 @@ SdFatSoftSpi<SOFT_MISO_PIN, SOFT_MOSI_PIN, SOFT_SCK_PIN> sd;
 
 SWTFT tft;
 
-class Screen: public IScreen {
+class Screen: public ITKScreen {
   public:
     virtual void drawPixel(int16_t x, int16_t y, uint16_t color) {
       tft.drawPixel(x, y, color);
@@ -106,8 +116,8 @@ void setup() {
   if (ret != 0) {
     Serial.println("init_sd failed. halt");
     tft.fillScreen(RED);
-    tft.setTextColor(BLACK);
-    tft.println("init_sd failed. halt");
+    //tft.setTextColor(BLACK);
+    //tft.println("init_sd failed. halt");
     while (true) {
     }
   }
