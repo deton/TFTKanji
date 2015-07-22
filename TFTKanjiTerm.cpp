@@ -35,6 +35,7 @@ int TFTKanjiTerm::addch(int ch) {
     } else {
       state = ST_PRINT;
       buf[0] = ESC;
+      buf[1] = '\0';
     }
     break;
   case ST_CSI: // ESC '['
@@ -92,6 +93,7 @@ int TFTKanjiTerm::addch(int ch) {
   case ST_SJIS1: // ch is SJIS 2nd byte
     state = ST_PRINT;
     buf[1] = ch;
+    buf[2] = '\0';
     break;
   case ST_PRINT:
   default:
@@ -104,6 +106,7 @@ int TFTKanjiTerm::addch(int ch) {
       return 1;
     } else {
       buf[0] = ch;
+      buf[1] = '\0';
     }
     break;
   }
@@ -115,7 +118,6 @@ int TFTKanjiTerm::addch(int ch) {
     y = 0;
   }
   int ret = tftkanji.drawText(&x, &y, buf, color, bgcolor);
-  memset(buf, 0, sizeof(buf));
   if (ret <= 0) {
     return ret;
   }
