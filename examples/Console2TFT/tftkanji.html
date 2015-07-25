@@ -1,0 +1,49 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>TFTKanji: Console2TFT</title>
+</head>
+<body>
+<form method="POST" action="/cgi-bin/tftkanji.py">
+<textarea name="text" rows="6" cols="40">
+J
+R1
+C1
+c0
+b65535
+TTFTKanjiで表示する文字列
+</textarea><br>
+<input type="submit">
+</form>
+
+<hr>
+<h3>コマンド</h3>
+<ul>
+  <li>R数値: 行位置(row)を設定。1から始まる。デフォルトは1。
+    (文字を描画しても現在の行位値は更新されない。)
+  <li>C数値: 桁位置(column)を設定。1から始まる。デフォルトは1。
+    文字を描画すると現在の桁位値が更新される。
+  <li>c数値: 文字色を設定。16ビットカラー。デフォルトは0(黒)。
+  <li>b数値: 背景色を設定。16ビットカラー。デフォルトは65535(白)。
+  <li>T文字列: 文字列を描画。UTF-8。改行まで。
+  <li>K: 現在行で、現在桁位置から画面右端までを背景色で塗りつぶす。
+  <li>J: 画面全体を背景色で塗りつぶす。
+</ul>
+
+数値は10進数。
+各コマンドの間は改行で区切る。
+
+<h4>色</h4>
+16ビットカラー。
+<ul>
+  <li>0: 黒
+  <li>31: 青(0x001F)
+  <li>63488: 赤(0xF800)
+  <li>2016: 緑(0x07E0)
+  <li>2047: シアン(0x07FF)
+  <li>63519: マゼンタ(0xF81F)
+  <li>65504: 黄(0xFFE0)
+  <li>65535: 白(0xFFFF)
+</ul>
+</body>
+</html>

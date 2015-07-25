@@ -163,7 +163,6 @@ void loop() {
 #if DBGLOG
     Serial.println(buf);
 #endif
-    Serial.println(F("> "));
     buf[n] = '\0';
     if (!initdone) {
       if (init_sd_font() == 0) {
@@ -173,5 +172,7 @@ void loop() {
     if (initdone) {
       parse(buf);
     }
+    Serial.println();
+    Serial.print(F("> "));
   }
 }
