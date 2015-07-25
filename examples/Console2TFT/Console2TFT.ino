@@ -106,7 +106,7 @@ int init_sd_font() {
   return init_font();
 }
 
-enum State {ST_WAITCMD, ST_GOTO, ST_GOTO2, ST_TEXT, ST_SJIS1};
+enum State {ST_WAITCMD, ST_SETX, ST_SETY, ST_TEXT, ST_SJIS1};
 State state = ST_WAITCMD;
 int16_t x = 0;
 int16_t y = 0;
@@ -133,37 +133,40 @@ void loop() {
         state = ST_TEXT;
         buf[1] = ch;
         buf[2] = '\0';
-      } else if (state == ST_GOTO) {
-        if (isdigit(ch)) {
-          row = row * 10 + ch - '0';
-        } else if (ch == ';') {
-          state = ST_GOTO2;
-          col = 0;
-        }
-        return;
-      } else if (state == ST_GOTO) {
+      } else if (state == ST_SETX) {
         if (isdigit(ch)) {
           col = col * 10 + ch - '0';
-          return;
         } else {
-          state = ST_TEXT;
-          if (row < 1) {
-            row = 1;
-          }
+          state = ST_WAITCMD;
           if (col < 1) {
             col = 1;
           }
           // 左上位置はrow=1,col=1→x=0,y=0
-          y = (row-1) * tftkanji.height();
           x = (col-1) * tftkanji.ankWidth();
         }
+        return;
+      } else if (state == ST_SETY) {
+        if (isdigit(ch)) {
+          row = row * 10 + ch - '0';
+        } else {
+          state = ST_WAITCMD;
+          if (row < 1) {
+            row = 1;
+          }
+          y = (row-1) * tftkanji.height();
+        }
+        return;
       } else if (state == ST_WAITCMD) {
         switch (ch) {
         case 'J':
           tft.fillScreen(bgcolor);
           return;
-        case 'H':
-          state = ST_GOTO;
+        case 'X':
+          state = ST_SETX;
+          col = 0;
+          break;
+        case 'Y':
+          state = ST_SETY;
           row = 0;
           break;
         case 'K':
