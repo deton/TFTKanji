@@ -15,6 +15,8 @@ TFT LCDに表示するためのライブラリです。
 * examples/Serial2TFT: Serialから読んでTFT LCDに表示。
  * TFTKanjiTermクラス: 漢字対応テキスト端末画面。
    エスケープシーケンス対応。"ESC[row;colH", "ESC[2J", "ESC[K"
+* examples/Console2TFT: Linux側からのメッセージを受けてTFT LCDに表示。
+ * cgi-bin/tftkanji.py: HTTPで描画する文字を受け付けるCGIスクリプト。
 
 ## 使用例
 * [Linino ONE](https://www.switch-science.com/catalog/2152/)
@@ -39,10 +41,8 @@ TFT LCDに表示するためのライブラリです。
   jiskan24、Kappa20、Ayu 18、ナガ10フォントを、
   BDF形式からfontx2形式に変換する際に使用。
 
-## 拡張案
-* HTTPで受信した文字列をTFT LCD表示。
-  Serial2TFTをConsoleから読むようにすれば可能だが、
-  そのままだとスケッチサイズが大きくてMCUに書き込めず。
+## 適用案
+* 行動予定表。Microsoft Exchangeサーバから各人の予定を取得して表示。
 
 ## 参考
 * [Arduino Due用](http://projectc3.seesaa.net/article/366244240.html)。
