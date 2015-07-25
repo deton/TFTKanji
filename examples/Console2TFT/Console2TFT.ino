@@ -90,15 +90,19 @@ void setup() {
 
 int init_font() {
   int ret = tftkanji.open(&sd, kanji_file, ank_file);
-  Serial.print("tftkanji.open()=");
+#if DBGLOG
+  Serial.print(F("tftkanji.open()="));
   Serial.println(ret);
+#endif
   return ret;
 }
 
 int init_sd_font() {
   int ret = init_sd();
-  Serial.print("init_sd()=");
+#if DBGLOG
+  Serial.print(F("init_sd()="));
   Serial.println(ret);
+#endif
   if (ret != 0) {
     return ret;
   }
@@ -106,99 +110,68 @@ int init_sd_font() {
   return init_font();
 }
 
-enum State {ST_WAITCMD, ST_SETX, ST_SETY, ST_TEXT, ST_SJIS1};
-State state = ST_WAITCMD;
 int16_t x = 0;
 int16_t y = 0;
-const uint16_t color = BLACK;
-const uint16_t bgcolor = WHITE;
-int row;
-int col;
-char buf[3];
+uint16_t color = BLACK;
+uint16_t bgcolor = WHITE;
+
+void parse(const char* buf) {
+  const char* p = buf + 1;
+  int n;
+  uint8_t cmd = *buf;
+  switch (cmd) { // command char
+  case 'J':
+    tft.fillScreen(bgcolor);
+    break;
+  case 'K':
+    tft.fillRect(x, y, tft.width() - x, tftkanji.height(), bgcolor);
+    break;
+  case 'T':
+    n = tftkanji.drawText(&x, &y, p, color, bgcolor);
+    if (n <= 0) {
+      Serial.print(F("NG drawText():"));
+      Serial.println(n);
+    }
+    break;
+  case 'C': // Col
+    // 左上位置はrow=1,col=1→x=0,y=0
+    x = (atoi(p)-1) * tftkanji.ankWidth();
+    break;
+  case 'R': // Row
+    y = (atoi(p)-1) * tftkanji.height();
+    break;
+  case 'c': // color
+    // XXX: スケッチサイズを減らすためatoi()
+    color = atoi(p);
+    break;
+  case 'b': // bgcolor
+    bgcolor = atoi(p);
+    break;
+  default:
+#if DBGLOG
+    Serial.print(F("NG cmd:"));
+    Serial.println(cmd);
+#endif
+    break;
+  }
+}
 
 void loop() {
+  char buf[41]; // 320[dot screen]/8[dot font] + 1
   if (Serial.available()) {
-    int ch = Serial.read();
-    if (ch < 0) {
-      return;
-    }
-    Serial.print(ch, HEX);
+    int n = Serial.readBytesUntil('\n', buf, sizeof buf);
+#if DBGLOG
+    Serial.println(buf);
+#endif
+    Serial.println(F("> "));
+    buf[n] = '\0';
     if (!initdone) {
       if (init_sd_font() == 0) {
         initdone = 1;
       }
     }
     if (initdone) {
-      if (state == ST_SJIS1) {
-        state = ST_TEXT;
-        buf[1] = ch;
-        buf[2] = '\0';
-      } else if (state == ST_SETX) {
-        if (isdigit(ch)) {
-          col = col * 10 + ch - '0';
-        } else {
-          state = ST_WAITCMD;
-          if (col < 1) {
-            col = 1;
-          }
-          // 左上位置はrow=1,col=1→x=0,y=0
-          x = (col-1) * tftkanji.ankWidth();
-        }
-        return;
-      } else if (state == ST_SETY) {
-        if (isdigit(ch)) {
-          row = row * 10 + ch - '0';
-        } else {
-          state = ST_WAITCMD;
-          if (row < 1) {
-            row = 1;
-          }
-          y = (row-1) * tftkanji.height();
-        }
-        return;
-      } else if (state == ST_WAITCMD) {
-        switch (ch) {
-        case 'J':
-          tft.fillScreen(bgcolor);
-          return;
-        case 'X':
-          state = ST_SETX;
-          col = 0;
-          break;
-        case 'Y':
-          state = ST_SETY;
-          row = 0;
-          break;
-        case 'K':
-          tft.fillRect(x, y, tft.width() - x, tftkanji.height(), bgcolor);
-          return;
-        case '\n':
-          state = ST_WAITCMD;
-          return;
-        default:
-          state = ST_TEXT;
-          break;
-        }
-      }
-      if (TFTKanji::issjis1(ch)) {
-        state = ST_SJIS1;
-        buf[0] = ch;
-        return;
-      } else {
-        buf[0] = ch;
-        buf[1] = '\0';
-      }
-      // scrollというかpage down
-      if (y >= tft.height()) {
-        tft.fillScreen(bgcolor);
-        x = 0;
-        y = 0;
-      }
-      int ret = tftkanji.drawText(&x, &y, buf, color, bgcolor);
-      if (ret <= 0) {
-        Serial.print("NG drawText():");
-        Serial.println(ret);
-      }
+      parse(buf);
     }
   }
 }
