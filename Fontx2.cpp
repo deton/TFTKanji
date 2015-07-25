@@ -91,20 +91,18 @@ uint32_t Fontx2::getAnkAddr(uint16_t ank) const {
 }
 
 uint32_t Fontx2::getKanjiAddr(uint16_t sjis) const {
-  int c = 0;
+  int c;
   uint32_t adrs = 0;
-  while(sjis > table[c].start){
-    if (sjis > table[c].end){
+  for (c = 0; sjis > table[c].start; c++) {
+    if (sjis > table[c].end) {
       adrs += table[c].end - table[c].start + 1;
     } else {
       adrs += sjis - table[c].start;
     }
-    c++;
   }
-  c--;
 #if DBGLOG
   Serial.print("sjis="); Serial.print(sjis, HEX);
-  Serial.print(",table num="); Serial.print(c);
+  Serial.print(",table num="); Serial.print(c-1);
   Serial.print(",adrs="); Serial.println(adrs, HEX);
 #endif
   uint32_t kanjiDataStart = ANK_DATA_START + 1 + tnum * sizeof(short) * 2;
