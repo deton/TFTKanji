@@ -10,11 +10,11 @@ TFT LCDに表示するためのライブラリです。
 * Fontx2クラス: fontx2ファイルの読み込みを行う。
 * TFTKanjiクラス: TFT LCDに漢字を含む文字列を描画する。
   各文字の描画時に、SDカード上のfontx2ファイルから文字のビットマップを読み込む
-* TFTKanjiTermクラス: 漢字対応テキスト端末画面。
-  エスケープシーケンス対応。"ESC[row;colH", "ESC[2J", "ESC[K"
 
 * examples/TFTKanjiDemo: 各種フォントを表示するデモ。
 * examples/Serial2TFT: Serialから読んでTFT LCDに表示。
+ * TFTKanjiTermクラス: 漢字対応テキスト端末画面。
+   エスケープシーケンス対応。"ESC[row;colH", "ESC[2J", "ESC[K"
 
 ## 使用例
 * [Linino ONE](https://www.switch-science.com/catalog/2152/)
