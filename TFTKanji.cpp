@@ -1,5 +1,8 @@
 #include "TFTKanji.h"
 
+// drawText()する文字列中に'\n'があったら、次の行に移動するかどうか
+//#define WRAP_NEWLINE 1
+
 #define DBGLOG 0
 
 TFTKanji::TFTKanji(ITKScreen* tft) :tft(tft) {
@@ -90,6 +93,7 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, 
       sjis1 = ch;
       continue;
     } else {
+#if WRAP_NEWLINE
       if (ch == '\n') {
         *y += height();
         *x = 0;
@@ -101,6 +105,7 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, 
       } else if (ch == '\r') { // ignore
         continue;
       }
+#endif
       ret = loadFontAndDraw(tft, *x, *y, ankFont, ch, color, bgcolor);
       fontWidth = ankFont.width();
     }
