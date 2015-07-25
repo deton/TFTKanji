@@ -9,11 +9,6 @@ class ITKScreen { // ITK: Interface class for TftKanji
   public:
     virtual void drawPixel(int16_t x, int16_t y, uint16_t color) = 0;
     virtual void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) = 0;
-    // XXX: fillScreen()はTFTKanjiでは不要。TFTKanjiTermで使用。
-    // プログラムサイズ削減のためTFTKanjiTerm用にサブクラスを作るのはやめた
-    virtual void fillScreen(uint16_t color) {
-      fillRect(0, 0, width(), height(), color);
-    }
     virtual int16_t width() = 0;
     virtual int16_t height() = 0;
 };

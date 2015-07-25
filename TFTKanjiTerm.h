@@ -2,6 +2,15 @@
 #define __TFTKANJITERM_H__
 #include "TFTKanji.h"
 
+#if USE_ITKSCREEN
+class ITKFScreen: public ITKScreen {
+  public:
+    virtual void fillScreen(uint16_t color) = 0;
+};
+#else
+# define ITKFScreen Adafruit_GFX
+#endif
+
 /*!
  * 漢字対応テキスト端末画面。
  * エスケープシーケンス対応。"ESC[row;colH", "ESC[2J", "ESC[K"
@@ -9,7 +18,7 @@
  */
 class TFTKanjiTerm {
   public:
-    TFTKanjiTerm(ITKScreen* tft);
+    TFTKanjiTerm(ITKFScreen* tft);
     virtual ~TFTKanjiTerm();
     int open(SdFatBase* sd, const char* kanjifile, const char* ankfile);
     bool close();
@@ -27,6 +36,6 @@ class TFTKanjiTerm {
     uint16_t color;
     uint16_t bgcolor;
     TFTKanji tftkanji;
-    ITKScreen* tft;
+    ITKFScreen* tft;
 };
 #endif // __TFTKANJITERM_H__
