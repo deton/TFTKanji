@@ -2,7 +2,7 @@
 
 #define DBGLOG 0
 
-TFTKanji::TFTKanji(ITKScreen* tft) :tft(tft), wrap(false) {
+TFTKanji::TFTKanji(ITKScreen* tft) :tft(tft) {
 }
 
 TFTKanji::~TFTKanji() {
@@ -65,13 +65,21 @@ int loadFontAndDraw(ITKScreen* tft, int16_t x, int16_t y,
   return ret;
 }
 
-int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color) {
+int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color
+#if WRAP_LONGLINE
+    , bool wrap
+#endif
+    ) {
   // bgcolorがcolorと同じ場合はbgcolorでのfillは行わない。フラグ不要にするため
   // cf. Adafruit_GFX::setTextColor()
   return drawText(x, y, str, color, color);
 }
 
-int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor) {
+int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor
+#if WRAP_LONGLINE
+    , bool wrap
+#endif
+    ) {
   uint16_t sjis1 = 0;
   const char* p = str;
   for (; *p != '\0'; p++) {
@@ -106,8 +114,9 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, 
       font = &ankFont;
     }
 
+    int16_t tftWidth = tft->width();
 #if WRAP_LONGLINE
-    if (wrap && *x + font->width() >= tft->width()) {
+    if (wrap && *x + font->width() > tftWidth) {
       *y += height();
       *x = 0;
       if (*y >= tft->height()) {
@@ -120,7 +129,7 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, 
       return ret;
     } // -1の場合、指定した文字のフォントデータ無し
     *x += font->width();
-    if (*x >= tft->width()) {
+    if (*x >= tftWidth) {
       break;
     }
   }

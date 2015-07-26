@@ -114,6 +114,7 @@ int16_t x = 0;
 int16_t y = 0;
 uint16_t color = BLACK;
 uint16_t bgcolor = WHITE;
+bool wrap = false;
 
 void parse(const char* buf) {
   const char* p = buf + 1;
@@ -127,9 +128,12 @@ void parse(const char* buf) {
     tft.fillRect(x, y, tft.width() - x, tftkanji.height(), bgcolor);
     break;
   case 'T':
-    n = tftkanji.drawText(&x, &y, p, color, bgcolor);
+    n = tftkanji.drawText(&x, &y, p, color, bgcolor, wrap);
     if (n <= 0) {
-      Serial.print(F("NG drawText():"));
+#if DBGLOG
+      //Serial.print(F("NG drawText():"));
+      Serial.print(F("NGd"));
+#endif
       Serial.println(n);
     }
     break;
@@ -146,6 +150,9 @@ void parse(const char* buf) {
     break;
   case 'b': // bgcolor
     bgcolor = atoi(p);
+    break;
+  case 'W': // wrap
+    wrap = (*p != '0');
     break;
   default:
 #if DBGLOG

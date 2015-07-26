@@ -48,8 +48,16 @@ class TFTKanji {
      * \param [in,out] x, y 描画開始位置。描画終了時に次の位置に更新される。
      * \return 描画したバイト数
      */
-    int drawText(int16_t* x, int16_t* y, const char* str, uint16_t color);
-    int drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor);
+    int drawText(int16_t* x, int16_t* y, const char* str, uint16_t color
+#if WRAP_LONGLINE
+        , bool wrap = false
+#endif
+        );
+    int drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor
+#if WRAP_LONGLINE
+        , bool wrap = false
+#endif
+        );
 
     /*! 文字の高さ */
     int height() const {
@@ -61,12 +69,6 @@ class TFTKanji {
       return ankFont.width();
     }
 
-#if WRAP_LONGLINE
-    void setWrap(bool b) {
-      wrap = b;
-    }
-#endif
-
     /*! SJISの第1バイトかどうか */
     static bool issjis1(int c) {
       return (c >= 0x81 && c <= 0x9f || c >= 0xe0 && c <= 0xff);
@@ -76,8 +78,5 @@ class TFTKanji {
     ITKScreen* tft;
     Fontx2 kanjiFont;
     Fontx2 ankFont;
-#if WRAP_LONGLINE
-    bool wrap;
-#endif
 };
 #endif // __TFTKANJI_H__
