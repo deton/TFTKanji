@@ -36,10 +36,19 @@ TFT LCDに表示するためのライブラリです。
   電源オン直後はSDカードが読めるが、Linuxが起動すると読めなくなる。
   software spiを使うためSdFatライブラリを使用。
 
+### BDFフォントとFontx2フォントの変換
 * [bdf2fontx.cをANKフォント対応するパッチ](https://gist.github.com/deton/acf8f59e27b25d547bb1)。
   [bdf2fontx.c](http://www.wheel.gr.jp/~dai/fonts/fontx.html) 0.1に対するパッチ。
   jiskan24、Kappa20、Ayu 18、ナガ10フォントを、
   BDF形式からfontx2形式に変換する際に使用。
+
+* [bdfunicode2jis.pl](https://gist.github.com/deton/df79c92195e1ebf9316e)。
+  iso10646(unicode)のBDFフォントから、
+  jisx0208またはjisx0201のBDFフォントを生成するスクリプト。
+  k8x12フォントを変換するために作成。
+  (mona font付属のjis2unicode.plの逆)
+ * [bdf2fontx.cでno ENDCHARになる問題の修正パッチ](https://gist.github.com/deton/f48b9eff706a10d7312c)。
+   k8x12フォントを変換できるように作成。
 
 ## 適用案
 * 行動予定表。Microsoft Exchangeサーバから各人の予定を取得して表示。
