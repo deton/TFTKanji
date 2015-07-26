@@ -1,11 +1,8 @@
 #include "TFTKanji.h"
 
-// drawText()する文字列中に'\n'があったら、次の行に移動するかどうか
-//#define WRAP_NEWLINE 1
-
 #define DBGLOG 0
 
-TFTKanji::TFTKanji(ITKScreen* tft) :tft(tft) {
+TFTKanji::TFTKanji(ITKScreen* tft) :tft(tft), wrap(false) {
 }
 
 TFTKanji::~TFTKanji() {
@@ -55,15 +52,15 @@ void drawBitmap(ITKScreen* tft, int16_t x, int16_t y,
 }
 
 int loadFontAndDraw(ITKScreen* tft, int16_t x, int16_t y,
-    const Fontx2& font, uint16_t code, uint16_t color, uint16_t bgcolor) {
-  int len = font.bitmapLen();
+    Fontx2* font, uint16_t code, uint16_t color, uint16_t bgcolor) {
+  int len = font->bitmapLen();
   uint8_t buf[len];
-  int ret = font.load(code, buf, len);
+  int ret = font->load(code, buf, len);
   if (ret == 0) {
     if (bgcolor != color) {
-      tft->fillRect(x, y, font.width(), font.height(), bgcolor);
+      tft->fillRect(x, y, font->width(), font->height(), bgcolor);
     }
-    drawBitmap(tft, x, y, buf, font.width(), font.height(), color);
+    drawBitmap(tft, x, y, buf, font->width(), font->height(), color);
   }
   return ret;
 }
@@ -79,16 +76,15 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, 
   const char* p = str;
   for (; *p != '\0'; p++) {
     uint8_t ch = (uint8_t)*p;
-    int ret = 0;
-    int fontWidth = 0;
+    uint16_t code;
+    Fontx2* font;
 #if DBGLOG
     Serial.print(ch, HEX);
 #endif
     if (sjis1) { // SJIS 2nd byte
-      uint16_t code = (sjis1 << 8) | ch;
+      code = (sjis1 << 8) | ch;
       sjis1 = 0;
-      ret = loadFontAndDraw(tft, *x, *y, kanjiFont, code, color, bgcolor);
-      fontWidth = kanjiFont.width();
+      font = &kanjiFont;
     } else if (issjis1(ch)) { // SJIS 1st byte
       sjis1 = ch;
       continue;
@@ -106,15 +102,24 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, 
         continue;
       }
 #endif
-      ret = loadFontAndDraw(tft, *x, *y, ankFont, ch, color, bgcolor);
-      fontWidth = ankFont.width();
+      code = ch;
+      font = &ankFont;
     }
 
+#if WRAP_LONGLINE
+    if (wrap && *x + font->width() >= tft->width()) {
+      *y += height();
+      *x = 0;
+      if (*y >= tft->height()) {
+        break;
+      }
+    }
+#endif
+    int ret = loadFontAndDraw(tft, *x, *y, font, code, color, bgcolor);
     if (ret < -1) {
       return ret;
     } // -1の場合、指定した文字のフォントデータ無し
-    *x += fontWidth;
-    // TODO: 長い行のwrap
+    *x += font->width();
     if (*x >= tft->width()) {
       break;
     }

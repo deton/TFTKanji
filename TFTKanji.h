@@ -2,6 +2,12 @@
 #define __TFTKANJI_H__
 #include "Fontx2.h"
 
+// drawText()する文字列中に'\n'があったら、次の行に移動するかどうか
+//#define WRAP_NEWLINE 1
+
+// 長い行の折り返し表示を設定できるようにするかどうか
+#define WRAP_LONGLINE 1
+
 #define USE_ITKSCREEN 0
 #if USE_ITKSCREEN
 /*! スクリーンへの描画やサイズ取得を行うためのインタフェースクラス */
@@ -25,10 +31,20 @@ class TFTKanji {
   public:
     TFTKanji(ITKScreen* tft);
     virtual ~TFTKanji();
-    int open(SdFatBase* sd, const char* kanjifile, const char* ankfile);
+    /*!
+     * SDカード上の指定されたフォントファイルを開く。
+     * フォントファイルは、SDカードのルートディレクトリにある必要あり。
+     * drawText()の前に呼んでおく必要あり。
+     * 既にopen()済で再度open()を呼んだ場合は、内部でclose()した後open()を行う。
+     * \param kanjifname 漢字フォントファイル名
+     * \param ankfname ANKフォントファイル名
+     * \return 0: 成功時。それ以外: エラー発生
+     */
+    int open(SdFatBase* sd, const char* kanjifname, const char* ankfname);
     bool close();
     /*!
-     * 文字列を描画する
+     * 文字列を描画する。
+     * 事前にopen()を呼んでおく必要あり。
      * \param [in,out] x, y 描画開始位置。描画終了時に次の位置に更新される。
      * \return 描画したバイト数
      */
@@ -45,6 +61,12 @@ class TFTKanji {
       return ankFont.width();
     }
 
+#if WRAP_LONGLINE
+    void setWrap(bool b) {
+      wrap = b;
+    }
+#endif
+
     /*! SJISの第1バイトかどうか */
     static bool issjis1(int c) {
       return (c >= 0x81 && c <= 0x9f || c >= 0xe0 && c <= 0xff);
@@ -54,5 +76,8 @@ class TFTKanji {
     ITKScreen* tft;
     Fontx2 kanjiFont;
     Fontx2 ankFont;
+#if WRAP_LONGLINE
+    bool wrap;
+#endif
 };
 #endif // __TFTKANJI_H__
