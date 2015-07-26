@@ -9,6 +9,7 @@ class Fontx2 {
     virtual ~Fontx2();
     /*!
      * フォントファイルを開く。
+     * 既にopen()済で再度open()を呼んだ場合は、内部でclose()した後open()を行う。
      * \param filepath SDカードのルートディレクトリにあるファイル名。
      * \return 0: 成功時。それ以外: エラー発生
      */
