@@ -44,6 +44,8 @@ struct {
   // ナガ10
   // http://hp.vector.co.jp/authors/VA013391/fonts/
   {"knj10.fnt", "5x10rk.fnt", "\x83\x69\x83\x4b\x31\x30(10x10)"},
+  // http://www.geocities.jp/littlimi/k8x12.htm
+  {"k8x12.fnt", "k4x12.fnt", "k8x12(8x12)"},
   // 美咲
   // http://www.geocities.jp/littlimi/misaki.htm
   {"MISAKI.FNT", "4X8.FNT", "\x94\xfc\x8d\xe7(8x8)"},
