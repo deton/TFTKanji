@@ -46,13 +46,11 @@ class TFTKanji {
      * 文字列を描画する。
      * 事前にopen()を呼んでおく必要あり。
      * \param [in,out] x, y 描画開始位置。描画終了時に次の位置に更新される。
+     * \param color 文字色。16ビットカラー
+     * \param bgcolor 背景色。16ビットカラー。
+     *  文字色と同じ値を指定すると、背景色での塗りつぶしは行わない。
      * \return 描画したバイト数
      */
-    int drawText(int16_t* x, int16_t* y, const char* str, uint16_t color
-#if WRAP_LONGLINE
-        , bool wrap = false
-#endif
-        );
     int drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor
 #if WRAP_LONGLINE
         , bool wrap = false

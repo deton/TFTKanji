@@ -57,22 +57,14 @@ int loadFontAndDraw(ITKScreen* tft, int16_t x, int16_t y,
   uint8_t buf[len];
   int ret = font->load(code, buf, len);
   if (ret == 0) {
+    // bgcolorがcolorと同じ場合はbgcolorでのfillは行わない。フラグ不要にするため
+    // cf. Adafruit_GFX::setTextColor()
     if (bgcolor != color) {
       tft->fillRect(x, y, font->width(), font->height(), bgcolor);
     }
     drawBitmap(tft, x, y, buf, font->width(), font->height(), color);
   }
   return ret;
-}
-
-int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color
-#if WRAP_LONGLINE
-    , bool wrap
-#endif
-    ) {
-  // bgcolorがcolorと同じ場合はbgcolorでのfillは行わない。フラグ不要にするため
-  // cf. Adafruit_GFX::setTextColor()
-  return drawText(x, y, str, color, color);
 }
 
 int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor
