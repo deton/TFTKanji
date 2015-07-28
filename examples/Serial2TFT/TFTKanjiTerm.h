@@ -23,6 +23,11 @@ class TFTKanjiTerm {
     int open(SdFatBase* sd, const char* kanjifile, const char* ankfile);
     bool close();
     int addch(int ch);
+#if WRAP_LONGLINE
+    void setWrap(bool b) {
+      wrap = b;
+    }
+#endif
 
   private:
     enum State { ST_PRINT, ST_SJIS1, ST_ESC, ST_CSI, ST_ESC_DIGIT };
@@ -35,6 +40,9 @@ class TFTKanjiTerm {
     int16_t y;
     uint16_t color;
     uint16_t bgcolor;
+#if WRAP_LONGLINE
+    bool wrap;
+#endif
     TFTKanji tftkanji;
     ITKFScreen* tft;
 };

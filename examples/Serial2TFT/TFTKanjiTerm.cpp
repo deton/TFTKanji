@@ -9,7 +9,11 @@ const char ESC = '\x1b';
 
 TFTKanjiTerm::TFTKanjiTerm(ITKFScreen* tft)
   :tft(tft), tftkanji(tft), state(ST_PRINT), x(0), y(0),
-   color(BLACK), bgcolor(WHITE) {
+   color(BLACK), bgcolor(WHITE)
+#if WRAP_LONGLINE
+   , wrap(false)
+#endif
+    {
   buf[0] = '\0';
 }
 
@@ -117,7 +121,11 @@ int TFTKanjiTerm::addch(int ch) {
     x = 0;
     y = 0;
   }
-  int ret = tftkanji.drawText(&x, &y, buf, color, bgcolor);
+  int ret = tftkanji.drawText(&x, &y, buf, color, bgcolor
+#if WRAP_LONGLINE
+      , wrap
+#endif
+      );
   if (ret <= 0) {
     return ret;
   }

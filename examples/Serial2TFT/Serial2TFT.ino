@@ -121,6 +121,7 @@ void loop() {
     if (!initdone) {
       if (init_sd_font() == 0) {
         initdone = 1;
+        //term.setWrap(true);
       }
     }
     if (initdone) {
