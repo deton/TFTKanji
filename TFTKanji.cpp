@@ -67,6 +67,15 @@ int loadFontAndDraw(ITKScreen* tft, int16_t x, int16_t y,
   return ret;
 }
 
+static int wrapline(int16_t tftHeight, int fontHeight, int16_t* x, int16_t* y) {
+  *y += fontHeight;
+  *x = 0;
+  if (*y >= tftHeight) {
+    return 1;
+  }
+  return 0;
+}
+
 int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, uint16_t bgcolor
 #if WRAP_LONGLINE
     , bool wrap
@@ -91,15 +100,11 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, 
     } else {
 #if WRAP_NEWLINE
       if (ch == '\n') {
-        *y += height();
-        *x = 0;
-        if (*y >= tft->height()) {
+        if (wrapline(tft->height(), height(), x, y)) {
           break;
         } else {
           continue;
         }
-      } else if (ch == '\r') { // ignore
-        continue;
       }
 #endif
       code = ch;
@@ -109,9 +114,7 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, 
     int16_t tftWidth = tft->width();
 #if WRAP_LONGLINE
     if (wrap && *x + font->width() > tftWidth) {
-      *y += height();
-      *x = 0;
-      if (*y >= tft->height()) {
+      if (wrapline(tft->height(), height(), x, y)) {
         break;
       }
     }
