@@ -67,7 +67,7 @@ int loadFontAndDraw(ITKScreen* tft, int16_t x, int16_t y,
   return ret;
 }
 
-static int wrapline(int16_t tftHeight, int fontHeight, int16_t* x, int16_t* y) {
+int wrapline(int16_t tftHeight, int fontHeight, int16_t* x, int16_t* y) {
   *y += fontHeight;
   *x = 0;
   if (*y >= tftHeight) {
