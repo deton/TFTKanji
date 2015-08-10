@@ -83,8 +83,8 @@ int TFTKanji::drawText(int16_t* x, int16_t* y, const char* str, uint16_t color, 
     ) {
   uint16_t sjis1 = 0;
   const char* p = str;
-  for (; *p != '\0'; p++) {
-    uint8_t ch = (uint8_t)*p;
+  uint8_t ch;
+  while ((ch = (uint8_t)*p++) != '\0') {
     uint16_t code;
     Fontx2* font;
 #if DBGLOG
