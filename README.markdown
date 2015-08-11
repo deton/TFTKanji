@@ -11,12 +11,15 @@ TFT LCDに表示するためのライブラリです。
 * TFTKanjiクラス: TFT LCDに漢字を含む文字列を描画する。
   各文字の描画時に、SDカード上のfontx2ファイルから文字のビットマップを読み込む
 
+サンプル:
+
 * examples/TFTKanjiDemo: 各種フォントを表示するデモ。
 * examples/Serial2TFT: Serialから読んでTFT LCDに表示。
  * TFTKanjiTermクラス: 漢字対応テキスト端末画面。
    エスケープシーケンス対応。"ESC[row;colH", "ESC[2J", "ESC[K"
 * examples/Console2TFT: Linux側からのメッセージを受けてTFT LCDに表示。
  * cgi-bin/tftkanji.py: HTTPで描画する文字を受け付けるCGIスクリプト。
+* examples/DumbDraw: TFT LCD以外に描画するサンプル。
 
 ## 使用例
 * [Linino ONE](https://www.switch-science.com/catalog/2152/)
