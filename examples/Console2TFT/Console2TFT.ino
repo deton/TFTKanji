@@ -129,6 +129,9 @@ void parse(const char* buf) {
   case 'K':
     tft.fillRect(x, y, tft.width() - x, tftkanji.height(), bgcolor);
     break;
+  case 'r': // rotation
+    tft.setRotation(atoi(p));
+    break;
   case 'T':
     n = tftkanji.drawText(&x, &y, p, color, bgcolor
 #if WRAP_LONGLINE
@@ -144,11 +147,11 @@ void parse(const char* buf) {
     }
     break;
   case 'C': // Col
-    // 左上位置はrow=1,col=1→x=0,y=0
-    x = (atoi(p)-1) * tftkanji.ankWidth();
+    // 左上位置はrow=0,col=0→x=0,y=0
+    x = atoi(p) * tftkanji.ankWidth();
     break;
   case 'R': // Row
-    y = (atoi(p)-1) * tftkanji.height();
+    y = atoi(p) * tftkanji.height();
     break;
   case 'c': // color
     // XXX: スケッチサイズを減らすためatoi()
