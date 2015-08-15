@@ -2,7 +2,7 @@
 
 漢字のビットマップデータを、
 microSDカード上のfontx2形式ファイルから読み込みながら
-TFT LCDに表示するためのライブラリです。
+TFT LCDに表示するためのArduino用ライブラリです。
 
 ![TFTKanjiDemo写真](../img/TFTKanjiDemo.jpg)
 
@@ -14,11 +14,11 @@ TFT LCDに表示するためのライブラリです。
 サンプル:
 
 * examples/TFTKanjiDemo: 各種フォントを表示するデモ。
-* examples/Serial2TFT: Serialから読んでTFT LCDに表示。
- * TFTKanjiTermクラス: 漢字対応テキスト端末画面。
-   エスケープシーケンス対応。"ESC[row;colH", "ESC[2J", "ESC[K"
+* examples/Serial2TFT: SerialからShift_JIS文字列を読んでTFT LCDに表示。
+ * TFTKanjiTermクラス: 漢字対応テキスト端末画面。エスケープシーケンス対応。"ESC[row;colH", "ESC[2J", "ESC[K"
 * examples/Console2TFT: Linux側からのメッセージを受けてTFT LCDに表示。
- * cgi-bin/tftkanji.py: HTTPで描画する文字を受け付けるCGIスクリプト。
+ * cgi-bin/tftkanji.py: HTTPで受けた文字列をTFT LCDに表示するCGIスクリプト。
+ * yoteihyo/: [TFT LCDに行動予定表を表示](#適用例-行動予定表)。
 * examples/DumbDraw: TFT LCD以外に描画するサンプル。
 
 ## 使用例
@@ -53,8 +53,26 @@ TFT LCDに表示するためのライブラリです。
  * [bdf2fontx.cでno ENDCHARになる問題の修正パッチ](https://gist.github.com/deton/f48b9eff706a10d7312c)。
    k8x12フォントを変換できるように作成。
 
-## 適用案
-* 行動予定表。Microsoft Exchangeサーバから各人の予定を取得して表示。
+## 適用例: 行動予定表
+Microsoft Exchangeサーバから各人の予定を取得して表示。
+
+* examples/Console2TFT/yoteihyo/
+ * yoteihyo.py: 予定表表示スクリプト。
+ * drawusername.py: メンバの名前を表示するスクリプト。
+ * syuttaikin.py: 出退勤表示用スクリプト。出勤時は名前の背景を青で表示。
+ * userdata.py: 予定表に表示するメンバの名前と表示位置。
+ * location.py: 場所文字列の短縮を行うためのデータ。
+ * ignore_patters.py: 無視したい予定の正規表現パターン。
+
+LininoONEのLinux側でスクリプトを実行。
+* 1回だけ実行: `python -m yoteihyo.drawusername`
+* cronで5分おきに実行: `python -m yoteihyo.syuttaikin deton@example.com http://example.com/cgi-bin/syuttaikin.cgi`
+* cronで1時間おきに実行: `python -m yoteihyo.yoteihyo 'http://example.com:8080/YoteihyoServlet/yoteihyo?emails=deton@example.com,taro@example.com'`
+
+syuttaikin.pyに指定するURLは、[自席PCのオン・オフに応じて、onlineまたはofflineを返すCGIスクリプト](https://github.com/deton/syuttaikin/blob/master/server/syuttaikin.cgi)。
+
+yoteihyo.pyに指定するURLは、Microsoft Exchangeサーバからの予定取得を行う、
+[YoteihyoServlet](https://github.com/deton/YoteihyoServlet)。
 
 ## 参考
 * [Arduino Due用](http://projectc3.seesaa.net/article/366244240.html)。
