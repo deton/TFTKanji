@@ -81,6 +81,15 @@ def draw_tft(yoteihyo):
             if e[u'freeBusyStatus'] == u'Free' or is_ignore(subj):
                 #print 'ignore'
                 continue
+                
+            need_reset_color = False
+            if e[u'freeBusyStatus'] == u'Tentative': # 仮の予定
+                outstr += u'\nc31727\nT' # gray
+                need_reset_color = True
+            elif e[u'freeBusyStatus'] == u'OOF': # 外出中
+                outstr += u'\nc63519\nT' # magenta
+                need_reset_color = True
+
             if start.date().day != prev.date().day or start.date().month != prev.date().month:
                 if start.date().day == now.date().day and start.date().month == now.date().month:
                     # 日全体の予定があって翌日終了のため●になったのを戻す
@@ -96,15 +105,6 @@ def draw_tft(yoteihyo):
                 outstr += headmark
             prev = start
 
-            need_reset_color = False
-            if e[u'freeBusyStatus'] == u'Tentative': # 仮の予定
-                outstr += u'?'
-            elif e[u'freeBusyStatus'] == u'Free': # 空き時間
-                outstr += u'\nc31727\nT' # gray
-                need_reset_color = True
-            elif e[u'freeBusyStatus'] == u'OOF': # 外出中
-                outstr += u'\nc63519\nT' # magenta
-                need_reset_color = True
             outstr += start.strftime(u'%H:%M-')
 
             if end.date().day != prev.date().day:
