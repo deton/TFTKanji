@@ -37,6 +37,7 @@ def drawsyuttaikin(online):
     sjis += '\n'
     tn.write(sjis)
     #print(sjis)
+    tn.write('b65535\n')
 
 def geturl(url):
     resbody = None
