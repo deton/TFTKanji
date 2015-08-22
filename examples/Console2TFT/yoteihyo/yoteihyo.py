@@ -64,7 +64,6 @@ def draw_tft(yoteihyo):
     for user in yoteihyo.viewkeys():
         if move_cursor(user) is False:
             continue
-        outstr = u'T'
         prev = now
         headmark = u'▼'
         for e in yoteihyo[user]:
@@ -84,12 +83,13 @@ def draw_tft(yoteihyo):
                 
             need_reset_color = False
             if e[u'freeBusyStatus'] == u'Tentative': # 仮の予定
-                outstr += u'\nc31727\nT' # gray
+                draw_text(u'c31727\n') # gray
                 need_reset_color = True
             elif e[u'freeBusyStatus'] == u'OOF': # 外出中
-                outstr += u'\nc63519\nT' # magenta
+                draw_text(u'c63519\n') # magenta
                 need_reset_color = True
 
+            outstr = u'T'
             if start.date().day != prev.date().day or start.date().month != prev.date().month:
                 if start.date().day == now.date().day and start.date().month == now.date().month:
                     # 日全体の予定があって翌日終了のため●になったのを戻す
@@ -121,9 +121,9 @@ def draw_tft(yoteihyo):
                 outstr += shorten_location(e[u'location'])
                 outstr += u')'
             if need_reset_color:
-                outstr += u'\nc0\nT' # black
-        outstr += u'\n'
-        draw_text(outstr)
+                outstr += u'\nc0' # black
+            outstr += u'\n'
+            draw_text(outstr)
 
 def main():
     try:
