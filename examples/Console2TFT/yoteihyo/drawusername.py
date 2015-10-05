@@ -10,7 +10,6 @@ def init():
     tn.write('c0\nb65535\n') # text color black, bgcolor white
     #print('c0\nb65535\n') # text color black, bgcolor white
 
-
 def move_cursor(user):
     """行動予定表内で、指定した人の位置にカーソルを移動"""
     tn.write('R{}\n'.format(userdata.userdata[user][1]))
@@ -32,6 +31,7 @@ def draw_tft():
 
 def main():
     try:
+        init()
         draw_tft()
     finally:
         tn.close()
