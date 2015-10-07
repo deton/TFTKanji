@@ -69,10 +69,10 @@ def draw_tft(yoteihyo):
         for e in yoteihyo[user]:
             start = datetime.datetime.fromtimestamp(e[u'startTime'])
             end   = datetime.datetime.fromtimestamp(e[u'endTime'])
-            # 終了予定後、2時間経過している予定は無視。
+            # 終了予定後、1時間経過している予定は無視。
             # 終わらず続いている場合は知りたい。
-            if end + datetime.timedelta(hours=2) < now:
-                #print 'ended event: {} + 2 hour < {}'.format(end, now)
+            if end + datetime.timedelta(hours=1) < now:
+                #print 'ended event: {} + 1 hour < {}'.format(end, now)
                 continue
             subj = e[u'subject']
             if subj is None:
