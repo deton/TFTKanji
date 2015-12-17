@@ -60,6 +60,7 @@ Microsoft Exchangeサーバから各人の予定を取得して表示。
  * yoteihyo.py: 予定表表示スクリプト。
  * drawusername.py: メンバの名前を表示するスクリプト。
  * syuttaikin.py: 出退勤表示用スクリプト。出勤時は名前の背景を青で表示。
+ * lyncpresence.py: Lyncプレゼンスを名前の背景色として表示。
  * userdata.py: 予定表に表示するメンバの名前と表示位置。
  * location.py: 場所文字列の短縮を行うためのデータ。
  * ignore_patters.py: 無視したい予定の正規表現パターン。
@@ -70,6 +71,8 @@ LininoONEのLinux側でスクリプトを実行。
 * cronで1時間おきに実行: `python -m yoteihyo.yoteihyo 'http://example.com:8080/YoteihyoServlet/yoteihyo?emails=deton@example.com,taro@example.com'`
 
 syuttaikin.pyに指定するURLは、[自席PCのオン・オフに応じて、onlineまたはofflineを返すCGIスクリプト](https://github.com/deton/syuttaikin/blob/master/server/syuttaikin.cgi)。
+
+lyncpresence.pyに指定するURLは、[Lyncプレゼンスを返すServlet](https://github.com/deton/java-lync-client)。
 
 yoteihyo.pyに指定するURLは、Microsoft Exchangeサーバからの予定取得を行う、
 [YoteihyoServlet](https://github.com/deton/YoteihyoServlet)。
