@@ -56,11 +56,15 @@ TFT LCDに表示するためのArduino用ライブラリです。
 ## 適用例: 行動予定表
 Microsoft Exchangeサーバから各人の予定を取得して表示。
 
+![行動予定表写真](../img/yoteihyo.jpg)
+
+(写真は一部ぼかしを入れています)
+
 * examples/Console2TFT/yoteihyo/
  * yoteihyo.py: 予定表表示スクリプト。
  * drawusername.py: メンバの名前を表示するスクリプト。
- * syuttaikin.py: 出退勤表示用スクリプト。出勤時は名前の背景を青で表示。
- * lyncpresence.py: Lyncプレゼンスを名前の背景色として表示。
+ * syuttaikin.py: 出退勤表示用スクリプト。出勤時は名前の背景色を青で表示。
+ * lyncpresence.py: Lyncプレゼンスを名前の背景色として表示。名前の背景色に関しては、syuttaikin.pyかlyncpresence.pyのいずれかを使う想定。
  * userdata.py: 予定表に表示するメンバの名前と表示位置。
  * location.py: 場所文字列の短縮を行うためのデータ。
  * ignore_patters.py: 無視したい予定の正規表現パターン。
