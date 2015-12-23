@@ -12,9 +12,15 @@
 #include "SWTFT.h" // Hardware-specific library
 #include "TFTKanji.h"
 
+#if 0
 // 小伝馬町16
 #define kanji_file "GONZN16X.TLF"
 #define ank_file   "GONHN16X.TLF"
+#else
+// genfont(16x8)
+#define kanji_file "GENZN08X.FNT"
+#define ank_file   "GENHN08X.FNT"
+#endif
 
 // Pin numbers in templates must be constants.
 const uint8_t SOFT_MISO_PIN = 12;
